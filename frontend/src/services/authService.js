@@ -54,14 +54,19 @@ export const logout = async () => {
 };
 
 /**
- * Verify if current token is valid
- * @returns {Promise<boolean>} - true if token is valid, false otherwise
+ * Verify JWT token validity
+ * @returns {Promise} - Verification response
  */
 export const verifyToken = async () => {
-    try {
-        const response = await axios.get(`${API_URL}/verify`);
-        return response.data.valid;
-    } catch (error) {
-        return false;
-    }
+    const response = await axios.get('/api/admin/verify');
+    return response.data;
+};
+
+/**
+ * Get current admin details
+ * @returns {Promise} - Admin data
+ */
+export const getCurrentAdmin = async () => {
+    const response = await axios.get('/api/admin/me');
+    return response.data.admin;
 };
