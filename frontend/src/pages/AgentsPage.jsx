@@ -37,13 +37,19 @@ const AgentsPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(''); // Clear previous errors
         try {
-            await createAgent(formData);
+            console.log('Creating agent with data:', formData);
+            const response = await createAgent(formData);
+            console.log('Agent created successfully:', response);
             setShowForm(false);
             setFormData({ name: '', email: '', phone: '', vehicleType: 'bike' });
             fetchAgents();
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to create delivery agent');
+            console.error('Error creating agent:', err);
+            console.error('Error response:', err.response);
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to create delivery agent';
+            setError(errorMessage);
         }
     };
 
@@ -51,19 +57,29 @@ const AgentsPage = () => {
         if (!window.confirm('Are you sure you want to delete this delivery agent?')) return;
 
         try {
+            console.log('Deleting agent:', id);
             await deleteAgent(id);
+            console.log('Agent deleted successfully');
             fetchAgents();
         } catch (err) {
-            setError('Failed to delete delivery agent');
+            console.error('Error deleting agent:', err);
+            console.error('Error response:', err.response);
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to delete delivery agent';
+            setError(errorMessage);
         }
     };
 
     const handleStatusChange = async (agentId, newStatus) => {
         try {
+            console.log('Updating agent status:', agentId, 'to', newStatus);
             await updateAgentStatus(agentId, newStatus);
+            console.log('Status updated successfully');
             fetchAgents(); // Refresh the list
         } catch (err) {
-            setError('Failed to update agent status');
+            console.error('Error updating agent status:', err);
+            console.error('Error response:', err.response);
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to update agent status';
+            setError(errorMessage);
         }
     };
 

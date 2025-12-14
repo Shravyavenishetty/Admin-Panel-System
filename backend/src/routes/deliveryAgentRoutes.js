@@ -17,6 +17,7 @@ router.route('/:id/status')
     .patch(protect, agentController.updateAgentStatus);
 
 router.route('/:id')
+    .put(protect, agentController.updateAgent)
     .delete(protect, agentController.deleteAgent);
 
 module.exports = router;

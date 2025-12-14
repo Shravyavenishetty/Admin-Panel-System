@@ -14,6 +14,7 @@ router.route('/')
     .post(protect, outletController.createOutlet);
 
 router.route('/:id')
+    .put(protect, outletController.updateOutlet)
     .delete(protect, outletController.deleteOutlet);
 
 module.exports = router;

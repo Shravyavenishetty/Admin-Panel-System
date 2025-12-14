@@ -14,6 +14,7 @@ router.route('/')
     .post(protect, staffController.createStaff);
 
 router.route('/:id')
+    .put(protect, staffController.updateStaff)
     .delete(protect, staffController.deleteStaff);
 
 module.exports = router;
