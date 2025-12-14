@@ -3,7 +3,7 @@
  * Handles all authentication-related API calls
  */
 
-import axios from 'axios';
+import axios from '../config/axios';
 import { setToken, removeToken } from '../utils/tokenManager';
 
 // Base API URL - will use Vite proxy in development
