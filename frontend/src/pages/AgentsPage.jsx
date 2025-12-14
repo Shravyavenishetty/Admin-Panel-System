@@ -1,15 +1,16 @@
 /**
- * Delivery Agents Management Page
+ * Delivery Agents Management Page - WITH EDIT FUNCTIONALITY
  * Complete CRUD interface for delivery agent management
  */
 
 import { useState, useEffect } from 'react';
-import { getAllAgents, createAgent, deleteAgent, updateAgentStatus } from '../services/agentService';
+import { getAllAgents, createAgent, deleteAgent, updateAgentStatus, updateAgent } from '../services/agentService';
 
 const AgentsPage = () => {
     const [agents, setAgents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -39,18 +40,43 @@ const AgentsPage = () => {
         e.preventDefault();
         setError(''); // Clear previous errors
         try {
-            console.log('Creating agent with data:', formData);
-            const response = await createAgent(formData);
-            console.log('Agent created successfully:', response);
+            console.log(editingId ? 'Updating' : 'Creating', 'agent with data:', formData);
+            if (editingId) {
+                const response = await updateAgent(editingId, formData);
+                console.log('Agent updated successfully:', response);
+            } else {
+                const response = await createAgent(formData);
+                console.log('Agent created successfully:', response);
+            }
             setShowForm(false);
+            setEditingId(null);
             setFormData({ name: '', email: '', phone: '', vehicleType: 'bike' });
             fetchAgents();
         } catch (err) {
-            console.error('Error creating agent:', err);
+            console.error('Error with agent:', err);
             console.error('Error response:', err.response);
-            const errorMessage = err.response?.data?.message || err.message || 'Failed to create delivery agent';
+            const errorMessage = err.response?.data?.message || err.message || `Failed to ${editingId ? 'update' : 'create'} delivery agent`;
             setError(errorMessage);
         }
+    };
+
+    const handleEdit = (agent) => {
+        setEditingId(agent._id);
+        setFormData({
+            name: agent.name,
+            email: agent.email,
+            phone: agent.phone,
+            vehicleType: agent.vehicleType,
+        });
+        setShowForm(true);
+        setError('');
+    };
+
+    const handleCancelEdit = () => {
+        setShowForm(false);
+        setEditingId(null);
+        setFormData({ name: '', email: '', phone: '', vehicleType: 'bike' });
+        setError('');
     };
 
     const handleDelete = async (id) => {
@@ -100,7 +126,17 @@ const AgentsPage = () => {
                     <p className="text-white/70">Manage your delivery agents</p>
                 </div>
                 <button
-                    onClick={() => setShowForm(!showForm)}
+                    onClick={() => {
+                        if (showForm && editingId) {
+                            handleCancelEdit();
+                        } else {
+                            setShowForm(!showForm);
+                            if (!showForm) {
+                                setEditingId(null);
+                                setFormData({ name: '', email: '', phone: '', vehicleType: 'bike' });
+                            }
+                        }
+                    }}
                     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
                 >
                     {showForm ? 'Cancel' : '+ Add Agent'}
@@ -115,7 +151,7 @@ const AgentsPage = () => {
 
             {showForm && (
                 <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 mb-6">
-                    <h2 className="text-xl font-bold text-white mb-4">Add New Delivery Agent</h2>
+                    <h2 className="text-xl font-bold text-white mb-4">{editingId ? 'Edit Delivery Agent' : 'Add New Delivery Agent'}</h2>
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-white/90 text-sm font-medium mb-2">Name *</label>
@@ -168,7 +204,7 @@ const AgentsPage = () => {
                                 type="submit"
                                 className="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-200"
                             >
-                                Create Agent
+                                {editingId ? 'Update Agent' : 'Create Agent'}
                             </button>
                         </div>
                     </form>
@@ -218,14 +254,26 @@ const AgentsPage = () => {
                                                 </select>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <button
-                                                    onClick={() => handleDelete(agent._id)}
-                                                    className="text-red-400 hover:text-red-300 transition-colors"
-                                                >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
+                                                <div className="flex items-center space-x-2">
+                                                    <button
+                                                        onClick={() => handleEdit(agent)}
+                                                        className="text-blue-400 hover:text-blue-300 transition-colors"
+                                                        title="Edit"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(agent._id)}
+                                                        className="text-red-400 hover:text-red-300 transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}

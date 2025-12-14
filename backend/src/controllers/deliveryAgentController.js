@@ -135,3 +135,49 @@ exports.updateAgentStatus = async (req, res) => {
         });
     }
 };
+
+/**
+ * Update delivery agent
+ * PUT /admin/delivery-agents/:id
+ */
+exports.updateAgent = async (req, res) => {
+    try {
+        const { name, email, phone, vehicleType } = req.body;
+        
+        // Check if email is being changed and already exists
+        if (email) {
+            const existing = await DeliveryAgent.findOne({ email, _id: { $ne: req.params.id } });
+            if (existing) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email already exists',
+                });
+            }
+        }
+
+        const agent = await DeliveryAgent.findByIdAndUpdate(
+            req.params.id,
+            { name, email, phone, vehicleType },
+            { new: true, runValidators: true }
+        );
+
+        if (!agent) {
+            return res.status(404).json({
+                success: false,
+                message: 'Delivery agent not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Delivery agent updated successfully',
+            data: agent,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error updating delivery agent',
+            error: error.message,
+        });
+    }
+};

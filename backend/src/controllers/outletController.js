@@ -83,3 +83,38 @@ exports.deleteOutlet = async (req, res) => {
         });
     }
 };
+
+/**
+ * Update outlet
+ * PUT /admin/outlets/:id
+ */
+exports.updateOutlet = async (req, res) => {
+    try {
+        const { name, address, phone, city, managerName } = req.body;
+
+        const outlet = await Outlet.findByIdAndUpdate(
+            req.params.id,
+            { name, address, phone, city, managerName },
+            { new: true, runValidators: true }
+        );
+
+        if (!outlet) {
+            return res.status(404).json({
+                success: false,
+                message: 'Outlet not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Outlet updated successfully',
+            data: outlet,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error updating outlet',
+            error: error.message,
+        });
+    }
+};

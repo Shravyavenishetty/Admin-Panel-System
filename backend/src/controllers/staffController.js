@@ -92,3 +92,49 @@ exports.deleteStaff = async (req, res) => {
         });
     }
 };
+
+/**
+ * Update staff
+ * PUT /admin/staff/:id
+ */
+exports.updateStaff = async (req, res) => {
+    try {
+        const { name, email, phone, role } = req.body;
+        
+        // Check if email is being changed and already exists
+        if (email) {
+            const existing = await Staff.findOne({ email, _id: { $ne: req.params.id } });
+            if (existing) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email already exists',
+                });
+            }
+        }
+
+        const staff = await Staff.findByIdAndUpdate(
+            req.params.id,
+            { name, email, phone, role },
+            { new: true, runValidators: true }
+        );
+
+        if (!staff) {
+            return res.status(404).json({
+                success: false,
+                message: 'Staff not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Staff updated successfully',
+            data: staff,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error updating staff',
+            error: error.message,
+        });
+    }
+};

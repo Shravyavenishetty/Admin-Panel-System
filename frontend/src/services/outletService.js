@@ -24,9 +24,17 @@ export const createOutlet = async (outletData) => {
 };
 
 /**
- * Delete outlet
+ * Delete an outlet
  */
 export const deleteOutlet = async (id) => {
     const response = await axios.delete(`${API_URL}/${id}`);
+    return response.data;
+};
+
+/**
+ * Update an outlet
+ */
+export const updateOutlet = async (id, outletData) => {
+    const response = await axios.put(`${API_URL}/${id}`, outletData);
     return response.data;
 };

@@ -38,3 +38,11 @@ export const updateAgentStatus = async (id, status) => {
     const response = await axios.patch(`${API_URL}/${id}/status`, { status });
     return response.data;
 };
+
+/**
+ * Update a delivery agent
+ */
+export const updateAgent = async (id, agentData) => {
+    const response = await axios.put(`${API_URL}/${id}`, agentData);
+    return response.data;
+};
