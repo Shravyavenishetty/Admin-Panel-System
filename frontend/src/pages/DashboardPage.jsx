@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { logout, getCurrentAdmin } from '../services/authService';
 
 const DashboardPage = () => {
@@ -82,12 +82,12 @@ const DashboardPage = () => {
         },
     ];
 
-    // Quick actions
+    // Quick actions with navigation
     const quickActions = [
-        { name: 'Add User', icon: 'UserPlus', color: 'purple' },
-        { name: 'New Order', icon: 'ShoppingCart', color: 'blue' },
-        { name: 'View Reports', icon: 'ChartBar', color: 'green' },
-        { name: 'Settings', icon: 'Cog', color: 'gray' },
+        { name: 'Manage Staff', path: '/staff', color: 'purple' },
+        { name: 'Delivery Agents', path: '/agents', color: 'blue' },
+        { name: 'Manage Outlets', path: '/outlets', color: 'green' },
+        { name: 'View Orders', path: '/orders', color: 'orange' },
     ];
 
     return (
@@ -128,19 +128,20 @@ const DashboardPage = () => {
                 <h3 className="text-xl font-bold text-white mb-4">Quick Actions</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {quickActions.map((action, index) => (
-                        <button
+                        <Link
                             key={index}
-                            className="bg-white/10 hover:bg-white/20 rounded-xl p-4 border border-white/20 transition-all duration-200 transform hover:scale-105"
+                            to={action.path}
+                            className="bg-white/10 hover:bg-white/20 rounded-xl p-4 border border-white/20 transition-all duration-200 transform hover:scale-105 block"
                         >
                             <div className="flex flex-col items-center space-y-2">
                                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center">
                                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                     </svg>
                                 </div>
                                 <span className="text-white text-sm font-medium">{action.name}</span>
                             </div>
-                        </button>
+                        </Link>
                     ))}
                 </div>
             </div>
