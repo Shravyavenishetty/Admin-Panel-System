@@ -90,7 +90,6 @@ const DashboardPage = () => {
         {
             title: 'Total Staff',
             value: loadingStats ? '...' : stats.totalStaff,
-            change: '+12%',
             icon: (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -101,7 +100,6 @@ const DashboardPage = () => {
         {
             title: 'Active Orders',
             value: loadingStats ? '...' : stats.activeOrders,
-            change: '+8%',
             icon: (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -112,7 +110,6 @@ const DashboardPage = () => {
         {
             title: 'Revenue',
             value: loadingStats ? '...' : `$${stats.totalRevenue.toFixed(2)}`,
-            change: '+23%',
             icon: (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -123,7 +120,6 @@ const DashboardPage = () => {
         {
             title: 'Pending Tasks',
             value: loadingStats ? '...' : stats.pendingTasks,
-            change: '-5%',
             icon: (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -160,16 +156,13 @@ const DashboardPage = () => {
                         key={index}
                         className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-200 transform hover:scale-105"
                     >
-                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center justify-center mb-4">
                             <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center text-white`}>
                                 {stat.icon}
                             </div>
-                            <span className={`text-sm font-semibold ${stat.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                                {stat.change}
-                            </span>
                         </div>
-                        <h3 className="text-white/70 text-sm mb-1">{stat.title}</h3>
-                        <p className="text-3xl font-bold text-white">{stat.value}</p>
+                        <h3 className="text-white/70 text-sm mb-1 text-center">{stat.title}</h3>
+                        <p className="text-3xl font-bold text-white text-center">{stat.value}</p>
                     </div>
                 ))}
             </div>
