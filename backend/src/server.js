@@ -15,6 +15,7 @@ const staffRoutes = require('./routes/staffRoutes');
 const agentRoutes = require('./routes/deliveryAgentRoutes');
 const outletRoutes = require('./routes/outletRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 // Initialize Express app
 const app = express();
@@ -71,6 +72,7 @@ app.use('/admin/staff', staffRoutes);
 app.use('/admin/agents', agentRoutes);
 app.use('/admin/outlets', outletRoutes);
 app.use('/admin/orders', orderRoutes);
+app.use('/admin/dashboard', dashboardRoutes);
 
 // 404 handler for undefined routes
 app.use((req, res) => {
