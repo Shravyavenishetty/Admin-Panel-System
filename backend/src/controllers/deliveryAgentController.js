@@ -92,3 +92,46 @@ exports.deleteAgent = async (req, res) => {
         });
     }
 };
+
+/**
+ * Update delivery agent status
+ * PATCH /admin/delivery-agents/:id/status
+ */
+exports.updateAgentStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+
+        // Validate status
+        const validStatuses = ['available', 'busy', 'offline'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid status. Must be: available, busy, or offline'
+            });
+        }
+
+        const agent = await DeliveryAgent.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true, runValidators: true }
+        );
+
+        if (!agent) {
+            return res.status(404).json({
+                success: false,
+                message: 'Delivery agent not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: agent
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error updating agent status',
+            error: error.message
+        });
+    }
+};
