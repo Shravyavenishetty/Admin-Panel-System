@@ -12,4 +12,7 @@ const { protect } = require('../middleware/auth');
 router.route('/recent-activity')
     .get(protect, dashboardController.getRecentActivity);
 
+router.route('/stats')
+    .get(protect, dashboardController.getDashboardStats);
+
 module.exports = router;
