@@ -1,0 +1,85 @@
+/**
+ * Outlet Controller
+ * Handles outlet CRUD operations (Create, Read, Delete)
+ */
+
+const Outlet = require('../models/Outlet');
+
+/**
+ * Get all outlets
+ * GET /admin/outlets
+ */
+exports.getAllOutlets = async (req, res) => {
+    try {
+        const outlets = await Outlet.find().sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            count: outlets.length,
+            data: outlets,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching outlets',
+            error: error.message,
+        });
+    }
+};
+
+/**
+ * Create new outlet
+ * POST /admin/outlets
+ */
+exports.createOutlet = async (req, res) => {
+    try {
+        const { name, address, phone, city } = req.body;
+
+        const outlet = await Outlet.create({
+            name,
+            address,
+            phone,
+            city,
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Outlet created successfully',
+            data: outlet,
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'Error creating outlet',
+            error: error.message,
+        });
+    }
+};
+
+/**
+ * Delete outlet
+ * DELETE /admin/outlets/:id
+ */
+exports.deleteOutlet = async (req, res) => {
+    try {
+        const outlet = await Outlet.findByIdAndDelete(req.params.id);
+
+        if (!outlet) {
+            return res.status(404).json({
+                success: false,
+                message: 'Outlet not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Outlet deleted successfully',
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error deleting outlet',
+            error: error.message,
+        });
+    }
+};
