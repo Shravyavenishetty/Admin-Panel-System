@@ -4,12 +4,13 @@
  */
 
 import { useState, useEffect } from 'react';
-import { getAllStaff, createStaff, deleteStaff } from '../services/staffService';
+import { getAllStaff, createStaff, deleteStaff, updateStaff } from '../services/staffService';
 
 const StaffPage = () => {
     const [staff, setStaff] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -40,23 +41,45 @@ const StaffPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Clear previous errors
+        setError('');
         setSuccess('');
-
         try {
-            await createStaff(formData);
-            setSuccess('Staff member added successfully!');
+            if (editingId) {
+                await updateStaff(editingId, formData);
+                setSuccess('Staff updated successfully!');
+            } else {
+                await createStaff(formData);
+                setSuccess('Staff created successfully!');
+            }
             setShowForm(false);
+            setEditingId(null);
             setFormData({ name: '', email: '', phone: '', role: 'server' });
             fetchStaff();
-
-            // Clear success message after 3 seconds
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'Failed to create staff. Please check your connection and try again.';
-            setError(errorMsg);
-            console.error('Create staff error:', err);
+            setError(err.response?.data?.message || `Failed to ${editingId ? 'update' : 'create'} staff`);
         }
+    };
+
+    const handleEdit = (member) => {
+        setEditingId(member._id);
+        setFormData({
+            name: member.name,
+            email: member.email,
+            phone: member.phone,
+            role: member.role,
+        });
+        setShowForm(true);
+        setError('');
+        setSuccess('');
+    };
+
+    const handleCancelEdit = () => {
+        setShowForm(false);
+        setEditingId(null);
+        setFormData({ name: '', email: '', phone: '', role: 'server' });
+        setError('');
+        setSuccess('');
     };
 
     const handleDelete = async (id) => {
@@ -92,7 +115,17 @@ const StaffPage = () => {
                     <p className="text-white/70">Manage your staff members</p>
                 </div>
                 <button
-                    onClick={toggleForm}
+                    onClick={() => {
+                        if (showForm && editingId) {
+                            handleCancelEdit();
+                        } else {
+                            setShowForm(!showForm);
+                            if (!showForm) {
+                                setEditingId(null);
+                                setFormData({ name: '', email: '', phone: '', role: 'server' });
+                            }
+                        }
+                    }}
                     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
                 >
                     {showForm ? 'Cancel' : '+ Add Staff'}
@@ -116,7 +149,7 @@ const StaffPage = () => {
             {/* Add Staff Form */}
             {showForm && (
                 <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 mb-6">
-                    <h2 className="text-xl font-bold text-white mb-4">Add New Staff</h2>
+                    <h2 className="text-xl font-bold text-white mb-4">{editingId ? 'Edit Staff Member' : 'Add New Staff Member'}</h2>
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-white/90 text-sm font-medium mb-2">Name *</label>
@@ -169,7 +202,7 @@ const StaffPage = () => {
                                 type="submit"
                                 className="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-200"
                             >
-                                Create Staff
+                                {editingId ? 'Update Staff' : 'Create Staff'}
                             </button>
                         </div>
                     </form>
@@ -207,14 +240,26 @@ const StaffPage = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <button
-                                                    onClick={() => handleDelete(member._id)}
-                                                    className="text-red-400 hover:text-red-300 transition-colors"
-                                                >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
+                                                <div className="flex items-center space-x-2">
+                                                    <button
+                                                        onClick={() => handleEdit(member)}
+                                                        className="text-blue-400 hover:text-blue-300 transition-colors"
+                                                        title="Edit"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(member._id)}
+                                                        className="text-red-400 hover:text-red-300 transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}

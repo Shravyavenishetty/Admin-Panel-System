@@ -30,3 +30,11 @@ export const deleteStaff = async (id) => {
     const response = await axios.delete(`${API_URL}/${id}`);
     return response.data;
 };
+
+/**
+ * Update a staff member
+ */
+export const updateStaff = async (id, staffData) => {
+    const response = await axios.put(`${API_URL}/${id}`, staffData);
+    return response.data;
+};
