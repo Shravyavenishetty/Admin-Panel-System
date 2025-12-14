@@ -173,6 +173,29 @@ const DashboardPage = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Quick Actions */}
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 mb-8">
+                <h3 className="text-xl font-bold text-white mb-4">Quick Actions</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {quickActions.map((action, index) => (
+                        <Link
+                            key={index}
+                            to={action.path}
+                            className="bg-white/10 hover:bg-white/20 rounded-xl p-4 border border-white/20 transition-all duration-200 transform hover:scale-105 block"
+                        >
+                            <div className="flex flex-col items-center space-y-2">
+                                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                </div>
+                                <span className="text-white text-sm font-medium">{action.name}</span>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </div>
             {/* Recent Activity */}
             <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
                 <h3 className="text-xl font-bold text-white mb-4">Recent Activity</h3>
@@ -224,22 +247,17 @@ const DashboardPage = () => {
 
                             return (
                                 <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-colors">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-lg flex items-center justify-center text-white">
-                                                {getIcon()}
-                                            </div>
-                                            <div>
-                                                <p className="text-white font-medium">{activity.title}</p>
-                                                {activity.subtitle && (
-                                                    <p className="text-white/60 text-sm">{activity.subtitle}</p>
-                                                )}
-                                                <p className="text-white/50 text-xs">{getTimeAgo(activity.timestamp)}</p>
-                                            </div>
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-lg flex items-center justify-center text-white">
+                                            {getIcon()}
                                         </div>
-                                        <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                        </svg>
+                                        <div className="flex-1">
+                                            <p className="text-white font-medium">{activity.title}</p>
+                                            {activity.subtitle && (
+                                                <p className="text-white/60 text-sm">{activity.subtitle}</p>
+                                            )}
+                                            <p className="text-white/50 text-xs">{getTimeAgo(activity.timestamp)}</p>
+                                        </div>
                                     </div>
                                 </div>
                             );
