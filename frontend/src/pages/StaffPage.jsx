@@ -17,6 +17,7 @@ const StaffPage = () => {
         role: 'server',
     });
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     // Fetch staff on component mount
     useEffect(() => {
@@ -28,6 +29,7 @@ const StaffPage = () => {
             setLoading(true);
             const response = await getAllStaff();
             setStaff(response.data || []);
+            setError(''); // Clear any errors on successful fetch
         } catch (err) {
             setError('Failed to fetch staff');
             console.error(err);
@@ -38,25 +40,47 @@ const StaffPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(''); // Clear previous errors
+        setSuccess('');
+
         try {
             await createStaff(formData);
+            setSuccess('Staff member added successfully!');
             setShowForm(false);
             setFormData({ name: '', email: '', phone: '', role: 'server' });
             fetchStaff();
+
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to create staff');
+            const errorMsg = err.response?.data?.message || 'Failed to create staff. Please check your connection and try again.';
+            setError(errorMsg);
+            console.error('Create staff error:', err);
         }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this staff member?')) return;
 
+        setError('');
+        setSuccess('');
+
         try {
             await deleteStaff(id);
+            setSuccess('Staff member deleted successfully!');
             fetchStaff();
+
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
             setError('Failed to delete staff');
         }
+    };
+
+    const toggleForm = () => {
+        setShowForm(!showForm);
+        setError(''); // Clear errors when toggling form
+        setSuccess('');
     };
 
     return (
@@ -68,12 +92,19 @@ const StaffPage = () => {
                     <p className="text-white/70">Manage your staff members</p>
                 </div>
                 <button
-                    onClick={() => setShowForm(!showForm)}
+                    onClick={toggleForm}
                     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
                 >
                     {showForm ? 'Cancel' : '+ Add Staff'}
                 </button>
             </div>
+
+            {/* Success Message */}
+            {success && (
+                <div className="bg-green-500/20 border border-green-500/50 text-white px-4 py-3 rounded-xl mb-6">
+                    {success}
+                </div>
+            )}
 
             {/* Error Message */}
             {error && (
