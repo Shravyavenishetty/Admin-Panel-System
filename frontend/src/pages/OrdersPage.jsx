@@ -92,9 +92,9 @@ const OrdersPage = () => {
                     <div>
                         <label className="block text-white/90 text-sm font-medium mb-2">Status</label>
                         <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white"
+                            value={filters.status}
+                            onChange={(e) => handleFilterChange('status', e.target.value)}
+                            className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white"
                         >
                             <option value="">All Statuses</option>
                             <option value="pending">Pending</option>
@@ -108,9 +108,9 @@ const OrdersPage = () => {
                     <div>
                         <label className="block text-white/90 text-sm font-medium mb-2">Outlet</label>
                         <select
-                            value={outletFilter}
-                            onChange={(e) => setOutletFilter(e.target.value)}
-                            className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white"
+                            value={filters.outlet}
+                            onChange={(e) => handleFilterChange('outlet', e.target.value)}
+                            className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white"
                         >
                             <option value="">All Outlets</option>
                             {outlets.map((outlet) => (
