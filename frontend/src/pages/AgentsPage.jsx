@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { getAllAgents, createAgent, deleteAgent } from '../services/agentService';
+import { getAllAgents, createAgent, deleteAgent, updateAgentStatus } from '../services/agentService';
 
 const AgentsPage = () => {
     const [agents, setAgents] = useState([]);
@@ -55,6 +55,15 @@ const AgentsPage = () => {
             fetchAgents();
         } catch (err) {
             setError('Failed to delete delivery agent');
+        }
+    };
+
+    const handleStatusChange = async (agentId, newStatus) => {
+        try {
+            await updateAgentStatus(agentId, newStatus);
+            fetchAgents(); // Refresh the list
+        } catch (err) {
+            setError('Failed to update agent status');
         }
     };
 
@@ -182,12 +191,15 @@ const AgentsPage = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-3 py-1 rounded-full text-sm capitalize ${agent.isAvailable
-                                                    ? 'bg-green-500/20 text-green-300'
-                                                    : 'bg-red-500/20 text-red-300'
-                                                    }`}>
-                                                    {agent.isAvailable ? 'Available' : 'Busy'}
-                                                </span>
+                                                <select
+                                                    value={agent.status}
+                                                    onChange={(e) => handleStatusChange(agent._id, e.target.value)}
+                                                    className={`px-3 py-1 rounded-full text-sm capitalize cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white ${getStatusColor(agent.status)}`}
+                                                >
+                                                    <option value="available">Available</option>
+                                                    <option value="busy">Busy</option>
+                                                    <option value="offline">Offline</option>
+                                                </select>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <button

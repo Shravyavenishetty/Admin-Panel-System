@@ -13,6 +13,9 @@ router.route('/')
     .get(protect, agentController.getAllAgents)
     .post(protect, agentController.createAgent);
 
+router.route('/:id/status')
+    .patch(protect, agentController.updateAgentStatus);
+
 router.route('/:id')
     .delete(protect, agentController.deleteAgent);
 

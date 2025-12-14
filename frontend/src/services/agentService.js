@@ -24,9 +24,17 @@ export const createAgent = async (agentData) => {
 };
 
 /**
- * Delete delivery agent
+ * Delete a delivery agent
  */
 export const deleteAgent = async (id) => {
     const response = await axios.delete(`${API_URL}/${id}`);
+    return response.data;
+};
+
+/**
+ * Update delivery agent status
+ */
+export const updateAgentStatus = async (id, status) => {
+    const response = await axios.patch(`${API_URL}/${id}/status`, { status });
     return response.data;
 };
