@@ -142,7 +142,7 @@ const OutletsPage = () => {
                                 placeholder="+1234567890"
                             />
                         </div>
-                        <div className="md:col-span-2">
+                        <div>
                             <label className="block text-white/90 text-sm font-medium mb-2">Address *</label>
                             <input
                                 type="text"
