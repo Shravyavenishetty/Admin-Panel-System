@@ -92,14 +92,15 @@ const OrdersPage = () => {
                     <div>
                         <label className="block text-white/90 text-sm font-medium mb-2">Status</label>
                         <select
-                            value={filters.status}
-                            onChange={(e) => handleFilterChange('status', e.target.value)}
-                            className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white"
                         >
                             <option value="">All Statuses</option>
                             <option value="pending">Pending</option>
                             <option value="preparing">Preparing</option>
                             <option value="ready">Ready</option>
+                            <option value="delivering">Delivering</option>
                             <option value="delivered">Delivered</option>
                             <option value="cancelled">Cancelled</option>
                         </select>
@@ -107,9 +108,9 @@ const OrdersPage = () => {
                     <div>
                         <label className="block text-white/90 text-sm font-medium mb-2">Outlet</label>
                         <select
-                            value={filters.outlet}
-                            onChange={(e) => handleFilterChange('outlet', e.target.value)}
-                            className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            value={outletFilter}
+                            onChange={(e) => setOutletFilter(e.target.value)}
+                            className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white"
                         >
                             <option value="">All Outlets</option>
                             {outlets.map((outlet) => (
@@ -167,11 +168,12 @@ const OrdersPage = () => {
                                             <select
                                                 value={order.status}
                                                 onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                                className={`px-3 py-1 rounded-full text-sm capitalize cursor-pointer border-0 focus:ring-2 focus:ring-purple-500 ${getStatusColor(order.status)}`}
+                                                className="px-3 py-1 bg-white/10 border border-white/20 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 capitalize [&>option]:bg-gray-800 [&>option]:text-white"
                                             >
                                                 <option value="pending">Pending</option>
                                                 <option value="preparing">Preparing</option>
                                                 <option value="ready">Ready</option>
+                                                <option value="delivering">Delivering</option>
                                                 <option value="delivered">Delivered</option>
                                                 <option value="cancelled">Cancelled</option>
                                             </select>

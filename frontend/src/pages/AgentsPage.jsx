@@ -130,11 +130,12 @@ const AgentsPage = () => {
                             <select
                                 value={formData.vehicleType}
                                 onChange={(e) => setFormData({ ...formData, vehicleType: e.target.value })}
-                                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white"
                             >
                                 <option value="bike">Bike</option>
+                                <option value="scooter">Scooter</option>
                                 <option value="car">Car</option>
-                                <option value="bicycle">Bicycle</option>
+                                <option value="van">Van</option>
                             </select>
                         </div>
                         <div className="md:col-span-2">
@@ -182,8 +183,8 @@ const AgentsPage = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-3 py-1 rounded-full text-sm capitalize ${agent.isAvailable
-                                                        ? 'bg-green-500/20 text-green-300'
-                                                        : 'bg-red-500/20 text-red-300'
+                                                    ? 'bg-green-500/20 text-green-300'
+                                                    : 'bg-red-500/20 text-red-300'
                                                     }`}>
                                                     {agent.isAvailable ? 'Available' : 'Busy'}
                                                 </span>

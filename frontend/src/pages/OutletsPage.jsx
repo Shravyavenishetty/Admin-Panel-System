@@ -187,4 +187,3 @@ const OutletsPage = () => {
 };
 
 export default OutletsPage;
-```
