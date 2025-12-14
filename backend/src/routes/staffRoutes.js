@@ -8,15 +8,12 @@ const router = express.Router();
 const staffController = require('../controllers/staffController');
 const { protect } = require('../middleware/auth');
 
-// All routes require authentication
-router.use(protect);
-
-// Staff routes
+// Staff routes (all protected)
 router.route('/')
-    .get(staffController.getAllStaff)
-    .post(staffController.createStaff);
+    .get(protect, staffController.getAllStaff)
+    .post(protect, staffController.createStaff);
 
 router.route('/:id')
-    .delete(staffController.deleteStaff);
+    .delete(protect, staffController.deleteStaff);
 
 module.exports = router;

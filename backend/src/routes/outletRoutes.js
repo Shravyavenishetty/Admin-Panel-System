@@ -8,15 +8,12 @@ const router = express.Router();
 const outletController = require('../controllers/outletController');
 const { protect } = require('../middleware/auth');
 
-// All routes require authentication
-router.use(protect);
-
-// Outlet routes
+// Outlet routes (all protected)
 router.route('/')
-    .get(outletController.getAllOutlets)
-    .post(outletController.createOutlet);
+    .get(protect, outletController.getAllOutlets)
+    .post(protect, outletController.createOutlet);
 
 router.route('/:id')
-    .delete(outletController.deleteOutlet);
+    .delete(protect, outletController.deleteOutlet);
 
 module.exports = router;

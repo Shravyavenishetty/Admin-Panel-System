@@ -8,14 +8,11 @@ const router = express.Router();
 const orderController = require('../controllers/orderController');
 const { protect } = require('../middleware/auth');
 
-// All routes require authentication
-router.use(protect);
-
-// Order routes
+// Order routes (all protected)
 router.route('/')
-    .get(orderController.getAllOrders);
+    .get(protect, orderController.getAllOrders);
 
 router.route('/:id/status')
-    .patch(orderController.updateOrderStatus);
+    .patch(protect, orderController.updateOrderStatus);
 
 module.exports = router;

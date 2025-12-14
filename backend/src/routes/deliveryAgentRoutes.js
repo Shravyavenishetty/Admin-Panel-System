@@ -8,15 +8,12 @@ const router = express.Router();
 const agentController = require('../controllers/deliveryAgentController');
 const { protect } = require('../middleware/auth');
 
-// All routes require authentication
-router.use(protect);
-
-// Delivery agent routes
+// Delivery agent routes (all protected)
 router.route('/')
-    .get(agentController.getAllAgents)
-    .post(agentController.createAgent);
+    .get(protect, agentController.getAllAgents)
+    .post(protect, agentController.createAgent);
 
 router.route('/:id')
-    .delete(agentController.deleteAgent);
+    .delete(protect, agentController.deleteAgent);
 
 module.exports = router;
