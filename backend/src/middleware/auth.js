@@ -52,4 +52,6 @@ const authenticateAdmin = async (req, res, next) => {
     }
 };
 
+// Export as 'protect' for consistency with route imports
 module.exports = authenticateAdmin;
+module.exports.protect = authenticateAdmin;

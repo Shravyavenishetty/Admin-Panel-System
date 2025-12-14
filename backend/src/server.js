@@ -11,6 +11,11 @@ const connectDB = require('./config/database');
 
 // Import routes
 const adminRoutes = require('./routes/adminRoutes');
+const staffRoutes = require('./routes/staffRoutes');
+const agentRoutes = require('./routes/deliveryAgentRoutes');
+const outletRoutes = require('./routes/outletRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 // Initialize Express app
 const app = express();
@@ -61,6 +66,13 @@ app.get('/health', (req, res) => {
 
 // Admin routes
 app.use('/api/admin', adminRoutes);
+
+// CRUD routes (Task 2)
+app.use('/admin/staff', staffRoutes);
+app.use('/admin/agents', agentRoutes);
+app.use('/admin/outlets', outletRoutes);
+app.use('/admin/orders', orderRoutes);
+app.use('/admin/dashboard', dashboardRoutes);
 
 // 404 handler for undefined routes
 app.use((req, res) => {
