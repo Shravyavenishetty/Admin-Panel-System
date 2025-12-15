@@ -25,6 +25,16 @@ const outletSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
+    location: {
+        lat: {
+            type: Number,
+            required: false, // Make optional for backward compatibility
+        },
+        lng: {
+            type: Number,
+            required: false,
+        },
+    },
 }, {
     timestamps: true,
 });
