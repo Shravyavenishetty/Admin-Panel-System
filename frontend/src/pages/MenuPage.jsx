@@ -61,6 +61,7 @@ const MenuPage = () => {
         try {
             setLoading(true);
             console.log('Fetching menu items with filters:', filters);
+            console.log('Filter details:', JSON.stringify(filters, null, 2));
             const response = await getMenuItems(filters);
             console.log('API Response:', response);
             console.log('Menu items data:', response.data);
