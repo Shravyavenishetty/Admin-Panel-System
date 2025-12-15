@@ -7,7 +7,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const http = require('http');
 const connectDB = require('./config/database');
+const { initializeSocket } = require('./config/socket');
 
 // Import routes
 const adminRoutes = require('./routes/adminRoutes');
@@ -108,8 +110,13 @@ app.use((err, req, res, next) => {
  * Start Server
  */
 const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
 
-app.listen(PORT, () => {
+// Initialize WebSocket
+initializeSocket(server);
+console.log('🔌 WebSocket server initialized');
+
+server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
 });
 

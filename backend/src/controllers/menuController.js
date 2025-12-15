@@ -5,6 +5,7 @@
 
 const Menu = require('../models/Menu');
 const { deleteImage } = require('../config/cloudinary');
+const { getIO } = require('../config/socket');
 const {
     buildSearchQuery,
     buildFilterQuery,
@@ -133,6 +134,14 @@ exports.createMenuItem = async (req, res) => {
 
         const item = await Menu.create(menuData);
 
+        // Emit socket event for real-time updates
+        try {
+            const io = getIO();
+            io.emit('menuItemCreated', item);
+        } catch (err) {
+            console.log('Socket not available:', err.message);
+        }
+
         res.status(201).json({
             success: true,
             message: 'Menu item created successfully',
@@ -194,6 +203,14 @@ exports.updateMenuItem = async (req, res) => {
             { new: true, runValidators: true }
         );
 
+        // Emit socket event for real-time updates
+        try {
+            const io = getIO();
+            io.emit('menuItemUpdated', updatedItem);
+        } catch (err) {
+            console.log('Socket not available:', err.message);
+        }
+
         res.status(200).json({
             success: true,
             message: 'Menu item updated successfully',
@@ -235,6 +252,14 @@ exports.deleteMenuItem = async (req, res) => {
 
         await Menu.findByIdAndDelete(req.params.id);
 
+        // Emit socket event for real-time updates
+        try {
+            const io = getIO();
+            io.emit('menuItemDeleted', req.params.id);
+        } catch (err) {
+            console.log('Socket not available:', err.message);
+        }
+
         res.status(200).json({
             success: true,
             message: 'Menu item deleted successfully',
@@ -265,6 +290,14 @@ exports.toggleAvailability = async (req, res) => {
 
         item.availability = !item.availability;
         await item.save();
+
+        // Emit socket event for real-time updates
+        try {
+            const io = getIO();
+            io.emit('menuItemToggled', item);
+        } catch (err) {
+            console.log('Socket not available:', err.message);
+        }
 
         res.status(200).json({
             success: true,
