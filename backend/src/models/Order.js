@@ -27,18 +27,88 @@ const orderSchema = new mongoose.Schema({
         required: [true, 'Outlet is required'],
     },
     items: [{
+        menuItem: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Menu',
+        },
         name: String,
-        quantity: Number,
-        price: Number,
+        quantity: {
+            type: Number,
+            required: true,
+            min: 1,
+        },
+        price: {
+            type: Number,
+            required: true,
+        },
     }],
+    // Delivery location
+    deliveryAddress: {
+        type: String,
+        required: [true, 'Delivery address is required'],
+    },
+    deliveryLocation: {
+        lat: {
+            type: Number,
+            required: true,
+        },
+        lng: {
+            type: Number,
+            required: true,
+        },
+    },
+    // Pricing breakdown
+    subtotal: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    distanceKm: {
+        type: Number,
+        default: 0,
+    },
+    distanceFee: {
+        type: Number,
+        default: 0,
+    },
+    zoneModifier: {
+        type: Number,
+        default: 0,
+    },
+    zoneName: {
+        type: String,
+        default: null,
+    },
+    zoneId: {
+        type: String,
+        default: null,
+    },
+    gstAmount: {
+        type: Number,
+        default: 0,
+    },
+    gstRate: {
+        type: Number,
+        default: 0.05,
+    },
+    finalPrice: {
+        type: Number,
+        required: true,
+    },
+    // Legacy field for backward compatibility
     totalAmount: {
         type: Number,
-        required: [true, 'Total amount is required'],
     },
     status: {
         type: String,
-        enum: ['pending', 'preparing', 'ready', 'delivered', 'cancelled'],
+        enum: ['pending', 'preparing', 'ready', 'delivering', 'delivered', 'cancelled'],
         default: 'pending',
+    },
+    // Delivery agent assignment
+    deliveryAgent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DeliveryAgent',
+        default: null,
     },
     // Notification placeholder
     notificationSent: {
