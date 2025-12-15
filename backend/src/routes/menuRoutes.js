@@ -9,9 +9,7 @@ const menuController = require('../controllers/menuController');
 const { protect } = require('../middleware/auth');
 const { upload } = require('../config/cloudinary');
 
-// Public routes (no authentication
-
- required)
+// Public routes (no authentication required)
 router.route('/categories')
     .get(menuController.getCategories);
 
