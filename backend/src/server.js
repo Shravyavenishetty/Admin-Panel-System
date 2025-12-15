@@ -17,6 +17,8 @@ const outletRoutes = require('./routes/outletRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const { publicRouter: menuPublicRoutes, adminRouter: menuAdminRoutes } = require('./routes/menuRoutes');
+const zonePricingRoutes = require('./routes/zonePricingRoutes');
+const systemConfigRoutes = require('./routes/systemConfigRoutes');
 
 // Initialize Express app
 const app = express();
@@ -78,6 +80,8 @@ app.use('/admin/dashboard', dashboardRoutes);
 // Menu routes (Task 3)
 app.use('/api/menu', menuPublicRoutes); // Public menu access
 app.use('/admin/menu', menuAdminRoutes); // Admin menu management
+app.use('/admin/zones', zonePricingRoutes); // Zone pricing management
+app.use('/admin/config', systemConfigRoutes); // System configuration
 
 
 // 404 handler for undefined routes
