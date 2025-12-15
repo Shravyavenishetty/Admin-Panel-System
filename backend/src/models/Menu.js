@@ -43,6 +43,8 @@ const menuSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Menu item name is required'],
         trim: true,
+        unique: true, // Prevent duplicate menu item names
+        index: true,
     },
     description: {
         type: String,
