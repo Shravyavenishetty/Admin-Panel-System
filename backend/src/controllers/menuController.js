@@ -111,6 +111,20 @@ exports.createMenuItem = async (req, res) => {
     try {
         const menuData = { ...req.body };
 
+        // Check for duplicate name
+        const existingItem = await Menu.findOne({ name: menuData.name });
+        if (existingItem) {
+            // If error occurs and image was uploaded, delete it
+            if (req.file && req.file.filename) {
+                await deleteImage(req.file.filename);
+            }
+
+            return res.status(400).json({
+                success: false,
+                message: `Menu item "${menuData.name}" already exists. Please use a different name.`,
+            });
+        }
+
         // Handle image upload from multer
         if (req.file) {
             menuData.image = req.file.path;
@@ -128,6 +142,14 @@ exports.createMenuItem = async (req, res) => {
         // If error occurs and image was uploaded, delete it
         if (req.file && req.file.filename) {
             await deleteImage(req.file.filename);
+        }
+
+        // Handle MongoDB duplicate key error
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'A menu item with this name already exists',
+            });
         }
 
         res.status(400).json({
