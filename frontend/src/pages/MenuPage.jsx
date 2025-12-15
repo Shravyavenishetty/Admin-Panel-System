@@ -60,12 +60,16 @@ const MenuPage = () => {
     const fetchMenuItems = async () => {
         try {
             setLoading(true);
+            console.log('Fetching menu items with filters:', filters);
             const response = await getMenuItems(filters);
+            console.log('API Response:', response);
+            console.log('Menu items data:', response.data);
+            console.log('Menu items length:', response.data?.length);
             setMenuItems(response.data || []);
             setPagination(response.pagination);
         } catch (err) {
             setError('Failed to fetch menu items');
-            console.error(err);
+            console.error('Fetch error:', err);
         } finally {
             setLoading(false);
         }
@@ -467,8 +471,8 @@ const MenuPage = () => {
                                                     <button
                                                         onClick={() => handleToggleAvailability(item._id)}
                                                         className={`px-3 py-1 rounded-full text-sm ${item.availability
-                                                                ? 'bg-green-500/20 text-green-300'
-                                                                : 'bg-red-500/20 text-red-300'
+                                                            ? 'bg-green-500/20 text-green-300'
+                                                            : 'bg-red-500/20 text-red-300'
                                                             }`}
                                                     >
                                                         {item.availability ? 'Available' : 'Unavailable'}
