@@ -1,4 +1,3 @@
-```
 /**
  * Menu Management Page
  * Complete CRUD interface for menu items with image upload
