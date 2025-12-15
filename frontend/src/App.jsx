@@ -10,6 +10,7 @@ import StaffPage from './pages/StaffPage';
 import AgentsPage from './pages/AgentsPage';
 import OutletsPage from './pages/OutletsPage';
 import OrdersPage from './pages/OrdersPage';
+import MenuPage from './pages/MenuPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import './index.css';
@@ -75,6 +76,18 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <OrdersPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Menu Management */}
+        <Route
+          path="/menu"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <MenuPage />
               </Layout>
             </ProtectedRoute>
           }
