@@ -15,7 +15,7 @@ export const getAllOrders = async (filters = {}) => {
     if (filters.status) params.append('status', filters.status);
     if (filters.outlet) params.append('outlet', filters.outlet);
 
-    const response = await axios.get(`${API_URL}?${params.toString()}`);
+    const response = await axios.get(`${API_URL}/admin/all?${params.toString()}`);
     return response.data;
 };
 
