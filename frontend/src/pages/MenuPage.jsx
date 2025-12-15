@@ -32,6 +32,7 @@ const MenuPage = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
     // Filters
     const [filters, setFilters] = useState({
@@ -92,6 +93,7 @@ const MenuPage = () => {
         e.preventDefault();
         setError('');
         setSuccess('');
+        setSubmitting(true);
 
         try {
             const formDataToSend = new FormData();
@@ -126,6 +128,8 @@ const MenuPage = () => {
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
             setError(err.response?.data?.message || `Failed to ${editingId ? 'update' : 'create'} menu item`);
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -360,9 +364,10 @@ const MenuPage = () => {
                         <div className="md:col-span-2">
                             <button
                                 type="submit"
-                                className="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-200"
+                                disabled={submitting}
+                                className="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {editingId ? 'Update Menu Item' : 'Create Menu Item'}
+                                {submitting ? 'Saving...' : (editingId ? 'Update Menu Item' : 'Create Menu Item')}
                             </button>
                         </div>
                     </form>
