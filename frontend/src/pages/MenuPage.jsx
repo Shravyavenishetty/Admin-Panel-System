@@ -47,6 +47,15 @@ const MenuPage = () => {
     useEffect(() => {
         fetchCategories();
         fetchMenuItems();
+
+        // Auto-refresh menu items every 30 seconds for live updates
+        const interval = setInterval(() => {
+            console.log('Auto-refreshing menu items...');
+            fetchMenuItems();
+        }, 30000); // 30 seconds
+
+        // Cleanup interval on unmount
+        return () => clearInterval(interval);
     }, [filters]);
 
     const fetchCategories = async () => {
