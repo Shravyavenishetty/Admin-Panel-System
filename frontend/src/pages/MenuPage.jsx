@@ -53,6 +53,11 @@ const MenuPage = () => {
         fetchMenuItems();
     }, []);
 
+    // Refetch menu items when filters change
+    useEffect(() => {
+        fetchMenuItems();
+    }, [filters]);
+
     useEffect(() => {
         if (!socket) return;
 
@@ -90,7 +95,7 @@ const MenuPage = () => {
             socket.off('menuItemToggled');
             console.log('MenuPage: Cleaned up WebSocket listeners');
         };
-    }, [socket, filters]);
+    }, [socket]);
 
     const fetchCategories = async () => {
         try {
