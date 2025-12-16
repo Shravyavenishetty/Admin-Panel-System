@@ -16,7 +16,6 @@ router.route('/')
     .post(protect, authorize('admin'), deliveryAgentController.createAgent); // Only admin can create
 
 router.route('/:id')
-    .get(protect, authorize('admin', 'manager'), autoTransform('deliveryAgent'), deliveryAgentController.getAgent)
     .put(protect, authorize('admin', 'manager'), deliveryAgentController.updateAgent) // Admin and Manager can update
     .delete(protect, authorize('admin'), deliveryAgentController.deleteAgent); // Only admin can delete
 
