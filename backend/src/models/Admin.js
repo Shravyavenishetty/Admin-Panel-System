@@ -19,13 +19,14 @@ const adminSchema = new mongoose.Schema(
             lowercase: true,
             trim: true,
             match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
+            index: true,
         },
 
         // Admin password - will be hashed before saving
         password: {
             type: String,
             required: [true, 'Password is required'],
-            minlength: [6, 'Password must be at least 6 characters long'],
+            minlength: 6,
             select: false, // Don't include password in queries by default
         },
 
@@ -36,11 +37,11 @@ const adminSchema = new mongoose.Schema(
             trim: true,
         },
 
-        // Admin role - defaults to 'admin'
+        // Admin role - supports admin, manager, user
         role: {
             type: String,
-            enum: ['admin', 'super_admin'],
-            default: 'admin',
+            enum: ['admin', 'manager', 'user'],
+            default: 'user',
         },
     },
     {

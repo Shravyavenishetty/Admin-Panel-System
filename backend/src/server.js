@@ -21,6 +21,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const { publicRouter: menuPublicRoutes, adminRouter: menuAdminRoutes } = require('./routes/menuRoutes');
 const zonePricingRoutes = require('./routes/zonePricingRoutes');
 const systemConfigRoutes = require('./routes/systemConfigRoutes');
+const { adminRouter: outletAdminRoutes, publicRouter: outletPublicRoutes } = require('./routes/outletRoutes');
 
 // Initialize Express app
 const app = express();
@@ -79,9 +80,13 @@ app.use('/admin/outlets', outletRoutes);
 app.use('/admin/orders', orderRoutes);
 app.use('/admin/dashboard', dashboardRoutes);
 
-// Menu routes (Task 3)
+// Menu routes (public and admin)
 app.use('/api/menu', menuPublicRoutes); // Public menu access
-app.use('/admin/menu', menuAdminRoutes); // Admin menu management
+app.use('/admin/menu', menuAdminRoutes);
+
+// Outlet routes (public for user app, admin for management)
+app.use('/api/outlets', outletPublicRoutes); // Public endpoint
+app.use('/admin/outlets', outletAdminRoutes); // Admin endpoint
 app.use('/admin/zones', zonePricingRoutes); // Zone pricing management
 app.use('/admin/config', systemConfigRoutes); // System configuration
 

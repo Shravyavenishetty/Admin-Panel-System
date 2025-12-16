@@ -5,19 +5,23 @@
 
 const express = require('express');
 const router = express.Router();
-const agentController = require('../controllers/deliveryAgentController');
+const deliveryAgentController = require('../controllers/deliveryAgentController');
 const { protect } = require('../middleware/auth');
+const { authorize } = require('../middleware/authorize');
+const { autoTransform } = require('../utils/responseTransformer');
 
-// Delivery agent routes (all protected)
+// Admin and Manager can view agents
 router.route('/')
-    .get(protect, agentController.getAllAgents)
-    .post(protect, agentController.createAgent);
-
-router.route('/:id/status')
-    .patch(protect, agentController.updateAgentStatus);
+    .get(protect, authorize('admin', 'manager'), autoTransform('deliveryAgent'), deliveryAgentController.getAllAgents)
+    .post(protect, authorize('admin'), deliveryAgentController.createAgent); // Only admin can create
 
 router.route('/:id')
-    .put(protect, agentController.updateAgent)
-    .delete(protect, agentController.deleteAgent);
+    .get(protect, authorize('admin', 'manager'), autoTransform('deliveryAgent'), deliveryAgentController.getAgent)
+    .put(protect, authorize('admin', 'manager'), deliveryAgentController.updateAgent) // Admin and Manager can update
+    .delete(protect, authorize('admin'), deliveryAgentController.deleteAgent); // Only admin can delete
+
+// Update agent status (Admin and Manager)
+router.route('/:id/status')
+    .patch(protect, authorize('admin', 'manager'), deliveryAgentController.updateAgentStatus);
 
 module.exports = router;
