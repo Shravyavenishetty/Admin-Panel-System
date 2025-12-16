@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import io from 'socket.io-client';
+import { useSocket } from '../contexts/SocketContext';
 import {
     getMenuItems,
     getMenuCategories,
@@ -13,8 +13,6 @@ import {
     deleteMenuItem,
     toggleMenuAvailability,
 } from '../services/menuService';
-
-const SOCKET_URL = 'http://localhost:5000';
 
 const MenuPage = () => {
     const [menuItems, setMenuItems] = useState([]);
@@ -47,50 +45,52 @@ const MenuPage = () => {
     });
     const [pagination, setPagination] = useState(null);
 
+    // Get socket from context
+    const { socket, isConnected } = useSocket();
+
     useEffect(() => {
         fetchCategories();
         fetchMenuItems();
-        
-        // Initialize WebSocket connection for real-time updates
-        const socket = io(SOCKET_URL);
-        
-        socket.on('connect', () => {
-            console.log('✅ WebSocket connected');
-        });
-        
-        socket.on('disconnect', () => {
-            console.log('❌ WebSocket disconnected');
-        });
-        
+    }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        console.log('🍕 MenuPage: Setting up WebSocket listeners');
+
         // Listen for menu item created
         socket.on('menuItemCreated', (item) => {
             console.log('📝 Menu item created:', item.name);
             fetchMenuItems(); // Refresh list
         });
-        
+
         // Listen for menu item updated
         socket.on('menuItemUpdated', (item) => {
             console.log('✏️ Menu item updated:', item.name);
             fetchMenuItems(); // Refresh list
         });
-        
+
         // Listen for menu item deleted
-        socket.on('menuItemDeleted', (id) => {
-            console.log('🗑️ Menu item deleted:', id);
+        socket.on('menuItemDeleted', (data) => {
+            console.log('🗑️ Menu item deleted:', data.id);
             fetchMenuItems(); // Refresh list
         });
-        
+
         // Listen for availability toggle
-        socket.on('menuItemToggled', (item) => {
-            console.log('🔄 Menu item toggled:', item.name, item.availability);
+        socket.on('menuItemToggled', (data) => {
+            console.log('🔄 Menu item toggled:', data.id, data.availability);
             fetchMenuItems(); // Refresh list
         });
-        
-        // Cleanup on unmount
+
+        // Cleanup listeners on unmount
         return () => {
-            socket.disconnect();
+            socket.off('menuItemCreated');
+            socket.off('menuItemUpdated');
+            socket.off('menuItemDeleted');
+            socket.off('menuItemToggled');
+            console.log('🍕 MenuPage: Cleaned up WebSocket listeners');
         };
-    }, [filters]);
+    }, [socket, filters]);
 
     const fetchCategories = async () => {
         try {
@@ -170,7 +170,7 @@ const MenuPage = () => {
             fetchMenuItems();
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.message || `Failed to ${ editingId ? 'update' : 'create' } menu item`);
+            setError(err.response?.data?.message || `Failed to ${editingId ? 'update' : 'create'} menu item`);
         } finally {
             setSubmitting(false);
         }
@@ -512,18 +512,17 @@ const MenuPage = () => {
                                                 <td className="px-6 py-4 text-white/80">{item.category}</td>
                                                 <td className="px-6 py-4 text-white font-semibold">₹{item.price}</td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`px - 3 py - 1 rounded - full text - sm capitalize ${ getFoodTypeColor(item.foodType) } `}>
+                                                    <span className={`px - 3 py - 1 rounded - full text - sm capitalize ${getFoodTypeColor(item.foodType)} `}>
                                                         {item.foodType}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <button
                                                         onClick={() => handleToggleAvailability(item._id)}
-                                                        className={`px - 3 py - 1 rounded - full text - sm ${
-    item.availability
-    ? 'bg-green-500/20 text-green-300'
-    : 'bg-red-500/20 text-red-300'
-} `}
+                                                        className={`px - 3 py - 1 rounded - full text - sm ${item.availability
+                                                                ? 'bg-green-500/20 text-green-300'
+                                                                : 'bg-red-500/20 text-red-300'
+                                                            } `}
                                                     >
                                                         {item.availability ? 'Available' : 'Unavailable'}
                                                     </button>
