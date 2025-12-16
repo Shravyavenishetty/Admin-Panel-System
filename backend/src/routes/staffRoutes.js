@@ -16,7 +16,6 @@ router.route('/')
     .post(protect, authorize('admin'), staffController.createStaff);
 
 router.route('/:id')
-    .get(protect, authorize('admin'), autoTransform('staff'), staffController.getStaff)
     .put(protect, authorize('admin'), staffController.updateStaff)
     .delete(protect, authorize('admin'), staffController.deleteStaff);
 
