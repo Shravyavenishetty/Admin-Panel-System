@@ -44,8 +44,8 @@ const login = async (req, res) => {
             });
         }
 
-        // Generate JWT token
-        const token = generateToken(admin._id);
+        // Generate JWT token with role
+        const token = generateToken(admin._id, admin.role);
 
         // Store session (in-memory)
         req.session.adminId = admin._id.toString();

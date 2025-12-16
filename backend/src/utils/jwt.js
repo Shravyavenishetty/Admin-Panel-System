@@ -8,11 +8,15 @@ const jwt = require('jsonwebtoken');
 /**
  * Generate JWT token for admin user
  * @param {string} adminId - Admin user ID
+ * @param {string} role - Admin role (admin, manager, user)
  * @returns {string} - JWT token
  */
-const generateToken = (adminId) => {
+const generateToken = (adminId, role = 'user') => {
     return jwt.sign(
-        { id: adminId }, // Payload
+        {
+            id: adminId,
+            role: role  // Include role in token payload
+        }, // Payload
         process.env.JWT_SECRET, // Secret key
         { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } // Options
     );
