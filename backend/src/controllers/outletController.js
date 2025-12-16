@@ -118,3 +118,29 @@ exports.updateOutlet = async (req, res) => {
         });
     }
 };
+
+/**
+ * Get public outlets (for user app)
+ * GET /api/outlets
+ * Public endpoint - no authentication required
+ */
+exports.getPublicOutlets = async (req, res) => {
+    try {
+        // Get all outlets and select only public fields
+        const outlets = await Outlet.find()
+            .select('name address city phone location')
+            .sort({ name: 1 });
+
+        res.status(200).json({
+            success: true,
+            count: outlets.length,
+            data: outlets,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching outlets',
+            error: error.message,
+        });
+    }
+};

@@ -23,6 +23,10 @@ router.route('/')
 router.route('/:id')
     .get(protect, autoTransform('order'), orderController.getOrder);
 
+// Get order timeline (status history)
+router.route('/:id/timeline')
+    .get(protect, orderController.getOrderTimeline);
+
 // Admin and Manager routes
 // View all orders
 router.route('/admin/all')

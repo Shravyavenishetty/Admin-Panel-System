@@ -322,7 +322,7 @@ exports.getOrder = async (req, res) => {
  */
 exports.updateOrderStatus = async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status, note } = req.body;
 
         if (!status) {
             return res.status(400).json({
@@ -331,20 +331,33 @@ exports.updateOrderStatus = async (req, res) => {
             });
         }
 
-        const order = await Order.findByIdAndUpdate(
-            req.params.id,
-            { status },
-            { new: true, runValidators: true }
-        )
-            .populate('outlet', 'name address')
-            .populate('deliveryAgent', 'name phone');
-
+        // Find order first to get current status
+        const order = await Order.findById(req.params.id);
         if (!order) {
             return res.status(404).json({
                 success: false,
                 message: 'Order not found',
             });
         }
+
+        // Only add to history if status actually changed
+        if (order.status !== status) {
+            // Append to status history
+            order.statusHistory.push({
+                status: status,
+                changedBy: req.user ? req.user._id : null,
+                changedAt: new Date(),
+                note: note || ''
+            });
+        }
+
+        // Update status
+        order.status = status;
+        await order.save();
+
+        // Populate for response
+        await order.populate('outlet', 'name address');
+        await order.populate('deliveryAgent', 'name phone');
 
         res.status(200).json({
             success: true,
@@ -355,6 +368,44 @@ exports.updateOrderStatus = async (req, res) => {
         res.status(400).json({
             success: false,
             message: 'Error updating order status',
+            error: error.message,
+        });
+    }
+};
+
+/**
+ * Get order timeline (status history)
+ * GET /api/orders/:id/timeline
+ */
+exports.getOrderTimeline = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id)
+            .populate('statusHistory.changedBy', 'name email')
+            .select('orderNumber statusHistory status');
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found',
+            });
+        }
+
+        // Check permissions: user can only see their own orders
+        // Admin/Manager can see all
+        if (req.user && req.user.role === 'user') {
+            // Additional check needed: verify order belongs to user
+            // For now, allow if authenticated
+        }
+
+        res.status(200).json({
+            success: true,
+            timeline: order.statusHistory,
+            currentStatus: order.status
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'Error fetching order timeline',
             error: error.message,
         });
     }

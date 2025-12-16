@@ -13,7 +13,7 @@ const { autoTransform } = require('../utils/responseTransformer');
 
 // Public route - for user app to see available outlets
 publicRouter.route('/')
-    .get(autoTransform('outlet'), outletController.getAllOutlets);
+    .get(outletController.getPublicOutlets);
 
 // Admin routes (protected)
 // Admin and Manager can view

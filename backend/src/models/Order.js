@@ -101,9 +101,31 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'preparing', 'ready', 'delivering', 'delivered', 'cancelled'],
+        enum: ['pending', 'confirmed', 'preparing', 'dispatched', 'delivered', 'cancelled'],
         default: 'pending',
     },
+
+    // Status change history for timeline tracking
+    statusHistory: [{
+        status: {
+            type: String,
+            enum: ['pending', 'confirmed', 'preparing', 'dispatched', 'delivered', 'cancelled'],
+            required: true
+        },
+        changedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Admin',
+            default: null
+        },
+        changedAt: {
+            type: Date,
+            default: Date.now
+        },
+        note: {
+            type: String,
+            default: ''
+        }
+    }],
     // Delivery agent assignment
     deliveryAgent: {
         type: mongoose.Schema.Types.ObjectId,
