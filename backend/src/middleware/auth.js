@@ -40,7 +40,9 @@ const authenticateAdmin = async (req, res, next) => {
         }
 
         // Attach admin to request object for use in route handlers
-        req.admin = admin;
+        // Use 'user' property for consistency with authorize middleware
+        req.user = admin;
+        req.admin = admin; // Keep for backward compatibility
 
         // Continue to next middleware/route handler
         next();
