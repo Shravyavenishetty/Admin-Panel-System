@@ -56,29 +56,29 @@ const MenuPage = () => {
     useEffect(() => {
         if (!socket) return;
 
-        console.log('🍕 MenuPage: Setting up WebSocket listeners');
+        console.log('MenuPage: Setting up WebSocket listeners');
 
         // Listen for menu item created
         socket.on('menuItemCreated', (item) => {
-            console.log('📝 Menu item created:', item.name);
+            console.log('Menu item created:', item.name);
             fetchMenuItems(); // Refresh list
         });
 
         // Listen for menu item updated
         socket.on('menuItemUpdated', (item) => {
-            console.log('✏️ Menu item updated:', item.name);
+            console.log('Menu item updated:', item.name);
             fetchMenuItems(); // Refresh list
         });
 
         // Listen for menu item deleted
         socket.on('menuItemDeleted', (data) => {
-            console.log('🗑️ Menu item deleted:', data.id);
+            console.log('Menu item deleted:', data.id);
             fetchMenuItems(); // Refresh list
         });
 
         // Listen for availability toggle
         socket.on('menuItemToggled', (data) => {
-            console.log('🔄 Menu item toggled:', data.id, data.availability);
+            console.log('Menu item toggled:', data.id, data.availability);
             fetchMenuItems(); // Refresh list
         });
 
@@ -88,7 +88,7 @@ const MenuPage = () => {
             socket.off('menuItemUpdated');
             socket.off('menuItemDeleted');
             socket.off('menuItemToggled');
-            console.log('🍕 MenuPage: Cleaned up WebSocket listeners');
+            console.log('MenuPage: Cleaned up WebSocket listeners');
         };
     }, [socket, filters]);
 
@@ -520,8 +520,8 @@ const MenuPage = () => {
                                                     <button
                                                         onClick={() => handleToggleAvailability(item._id)}
                                                         className={`px - 3 py - 1 rounded - full text - sm ${item.availability
-                                                                ? 'bg-green-500/20 text-green-300'
-                                                                : 'bg-red-500/20 text-red-300'
+                                                            ? 'bg-green-500/20 text-green-300'
+                                                            : 'bg-red-500/20 text-red-300'
                                                             } `}
                                                     >
                                                         {item.availability ? 'Available' : 'Unavailable'}
