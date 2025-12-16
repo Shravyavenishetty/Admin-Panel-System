@@ -76,7 +76,7 @@ app.use('/api/admin', adminRoutes);
 // CRUD routes (Task 2)
 app.use('/admin/staff', staffRoutes);
 app.use('/admin/agents', agentRoutes);
-app.use('/admin/outlets', outletRoutes);
+app.use('/admin/outlets', outletAdminRoutes); // Use adminRouter from destructured import
 app.use('/admin/orders', orderRoutes);
 app.use('/admin/dashboard', dashboardRoutes);
 
@@ -86,7 +86,8 @@ app.use('/admin/menu', menuAdminRoutes);
 
 // Outlet routes (public for user app, admin for management)
 app.use('/api/outlets', outletPublicRoutes); // Public endpoint
-app.use('/admin/outlets', outletAdminRoutes); // Admin endpoint
+// Admin outlet route already registered above at line 78
+
 app.use('/admin/zones', zonePricingRoutes); // Zone pricing management
 app.use('/admin/config', systemConfigRoutes); // System configuration
 

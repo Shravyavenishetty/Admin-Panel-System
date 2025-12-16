@@ -97,17 +97,31 @@ const autoTransform = (modelName) => {
         const originalJson = res.json.bind(res);
 
         res.json = function (data) {
-            const userRole = req.user?.role || 'public';
+            try {
+                const userRole = req.user?.role || 'public';
 
-            // Transform data if it exists in response
-            if (data && data.data) {
-                data.data = transformResponse(data.data, modelName, userRole);
-            } else if (data && !data.success && !data.message) {
-                // Raw data response (not wrapped in success/data structure)
-                data = transformResponse(data, modelName, userRole);
+                // Only transform if we have transformation rules for this model
+                if (!fieldVisibility[modelName]) {
+                    return originalJson(data);
+                }
+
+                // Transform data if it exists in response
+                if (data && data.data) {
+                    data.data = transformResponse(data.data, modelName, userRole);
+                } else if (data && Array.isArray(data)) {
+                    // Handle direct array responses (like categories)
+                    data = transformResponse(data, modelName, userRole);
+                } else if (data && typeof data === 'object' && !data.success && !data.message && !data.error) {
+                    // Single object response (not wrapped)
+                    data = transformResponse(data, modelName, userRole);
+                }
+
+                return originalJson(data);
+            } catch (error) {
+                console.error('Transform error:', error);
+                // If transformation fails, return original data
+                return originalJson(data);
             }
-
-            return originalJson(data);
         };
 
         next();
