@@ -1,29 +1,67 @@
 /**
  * Staff Management Page
- * Complete CRUD interface for staff management
+ * CRUD interface for staff members
  */
 
 import { useState, useEffect } from 'react';
-import { getAllStaff, createStaff, deleteStaff, updateStaff } from '../services/staffService';
+import { useSocket } from '../contexts/SocketContext';
+import {
+    getAllStaff,
+    createStaff,
+    updateStaff,
+    deleteStaff,
+} from '../services/staffService';
 
 const StaffPage = () => {
     const [staff, setStaff] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
+    // Get socket from context
+    const { socket, isConnected } = useSocket();
+
+    // Fetch staff on component mount
+    useEffect(() => {
+        fetchStaff();
+    }, []);
+
+    // WebSocket listeners
+    useEffect(() => {
+        if (!socket) return;
+
+        console.log(' StaffPage: Setting up WebSocket listeners');
+
+        socket.on('staffCreated', (member) => {
+            console.log(' New staff member:', member.name);
+            fetchStaff();
+        });
+
+        socket.on('staffUpdated', (member) => {
+            console.log(' Staff updated:', member.name);
+            fetchStaff();
+        });
+
+        socket.on('staffDeleted', (data) => {
+            console.log(' Staff deleted:', data.id);
+            fetchStaff();
+        });
+
+        return () => {
+            socket.off('staffCreated');
+            socket.off('staffUpdated');
+            socket.off('staffDeleted');
+            console.log('👥 StaffPage: Cleaned up WebSocket listeners');
+        };
+    }, [socket]);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
         role: 'server',
     });
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
-
-    // Fetch staff on component mount
-    useEffect(() => {
-        fetchStaff();
-    }, []);
 
     const fetchStaff = async () => {
         try {

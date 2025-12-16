@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useSocket } from '../contexts/SocketContext';
 import { getAllOrders, updateOrderStatus } from '../services/orderService';
 import { getAllOutlets } from '../services/outletService';
 
@@ -17,10 +18,42 @@ const OrdersPage = () => {
     });
     const [error, setError] = useState('');
 
+    // Get socket from context
+    const { socket, isConnected } = useSocket();
+
     useEffect(() => {
         fetchOrders();
         fetchOutlets();
     }, []);
+
+    // WebSocket listeers for real-time updates
+    useEffect(() => {
+        if (!socket) return;
+
+        console.log(' OrdersPage: Setting up WebSocket listeners');
+
+        socket.on('orderCreated', (order) => {
+            console.log(' New order:', order.orderNumber);
+            fetchOrders(); // Refresh list
+        });
+
+        socket.on('orderUpdated', (order) => {
+            console.log(' Order updated:', order.orderNumber);
+            fetchOrders(); // Refresh list
+        });
+
+        socket.on('orderDeleted', (data) => {
+            console.log(' Order deleted:', data.id);
+            fetchOrders(); // Refresh list
+        });
+
+        return () => {
+            socket.off('orderCreated');
+            socket.off('orderUpdated');
+            socket.off('orderDeleted');
+            console.log(' OrdersPage: Cleaned up WebSocket listeners');
+        };
+    }, [socket]);
 
     const fetchOrders = async () => {
         try {

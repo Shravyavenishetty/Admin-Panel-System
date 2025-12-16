@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useSocket } from '../contexts/SocketContext';
 import { getAllAgents, createAgent, deleteAgent, updateAgentStatus, updateAgent } from '../services/agentService';
 
 const AgentsPage = () => {
@@ -19,9 +20,41 @@ const AgentsPage = () => {
     });
     const [error, setError] = useState('');
 
+    // Get socket from context
+    const { socket, isConnected } = useSocket();
+
     useEffect(() => {
         fetchAgents();
     }, []);
+
+    // WebSocket listeners
+    useEffect(() => {
+        if (!socket) return;
+
+        console.log(' AgentsPage: Setting up WebSocket listeners');
+
+        socket.on('agentCreated', (agent) => {
+            console.log(' New agent:', agent.name);
+            fetchAgents();
+        });
+
+        socket.on('agentUpdated', (agent) => {
+            console.log(' Agent updated:', agent.name);
+            fetchAgents();
+        });
+
+        socket.on('agentDeleted', (data) => {
+            console.log(' Agent deleted:', data.id);
+            fetchAgents();
+        });
+
+        return () => {
+            socket.off('agentCreated');
+            socket.off('agentUpdated');
+            socket.off('agentDeleted');
+            console.log(' AgentsPage: Cleaned up WebSocket listeners');
+        };
+    }, [socket]);
 
     const fetchAgents = async () => {
         try {
@@ -246,7 +279,7 @@ const AgentsPage = () => {
                                                 <select
                                                     value={agent.status}
                                                     onChange={(e) => handleStatusChange(agent._id, e.target.value)}
-                                                    className={`px-3 py-1 rounded-full text-sm capitalize cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white ${getStatusColor(agent.status)}`}
+                                                    className={`px - 3 py - 1 rounded - full text - sm capitalize cursor - pointer focus: outline - none focus: ring - 2 focus: ring - purple - 500[&> option]: bg - gray - 800[&> option]: text - white ${getStatusColor(agent.status)} `}
                                                 >
                                                     <option value="available">Available</option>
                                                     <option value="busy">Busy</option>

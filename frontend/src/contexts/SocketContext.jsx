@@ -52,7 +52,7 @@ export const SocketProvider = ({ children }) => {
 
         // Cleanup on unmount
         return () => {
-            console.log('🔌 Closing global WebSocket connection');
+            console.log('Closing global WebSocket connection');
             newSocket.close();
         };
     }, []); // Empty dependency array - only connect once
