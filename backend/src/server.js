@@ -43,6 +43,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from public directory (for API tester)
+app.use(express.static('public'));
+
 // Session middleware - In-memory session storage
 app.use(
     session({
@@ -84,6 +87,9 @@ app.use('/admin/dashboard', dashboardRoutes);
 app.use('/api/menu', menuPublicRoutes); // Public menu access
 app.use('/admin/menu', menuAdminRoutes);
 
+// Order routes (public for price calculation and order creation)
+app.use('/api/orders', orderRoutes); // Public order endpoints (calculate, create, view own)
+
 // Outlet routes (public for user app, admin for management)
 app.use('/api/outlets', outletPublicRoutes); // Public endpoint
 // Admin outlet route already registered above at line 78
@@ -120,10 +126,10 @@ const server = http.createServer(app);
 
 // Initialize WebSocket
 initializeSocket(server);
-console.log('🔌 WebSocket server initialized');
+console.log('WebSocket server initialized');
 
 server.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
+    console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
 });
 
 module.exports = app;

@@ -26,8 +26,9 @@ router.route('/:id')
 // These will be mounted under /admin/menu
 const adminRouter = express.Router();
 
-// Admin and Manager can create menu items
+// Admin and Manager can view all menu items (with full details)
 adminRouter.route('/')
+    .get(protect, authorize('admin', 'manager'), autoTransform('menu'), menuController.getMenuItems)
     .post(protect, authorize('admin', 'manager'), upload.single('image'), menuController.createMenuItem);
 
 // Admin and Manager can update/delete

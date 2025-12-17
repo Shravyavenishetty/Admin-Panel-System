@@ -173,8 +173,13 @@ exports.createOrder = async (req, res) => {
             deliveryLocation
         );
 
+        // Generate unique order number
+        const orderCount = await Order.countDocuments();
+        const orderNumber = `ORD-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(orderCount + 1).padStart(4, '0')}`;
+
         // Create order
         const order = await Order.create({
+            orderNumber,
             customerName,
             customerPhone,
             outlet: outletId,
