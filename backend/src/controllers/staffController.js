@@ -4,6 +4,7 @@
  */
 
 const Staff = require('../models/Staff');
+const { getIO } = require('../config/socket');
 
 /**
  * Get all staff
@@ -51,6 +52,15 @@ exports.createStaff = async (req, res) => {
             role,
         });
 
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('staffCreated', {
+            _id: staff._id,
+            name: staff.name,
+            role: staff.role,
+            email: staff.email
+        });
+
         res.status(201).json({
             success: true,
             message: 'Staff created successfully',
@@ -80,6 +90,13 @@ exports.deleteStaff = async (req, res) => {
             });
         }
 
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('staffDeleted', {
+            id: staff._id,
+            name: staff.name
+        });
+
         res.status(200).json({
             success: true,
             message: 'Staff deleted successfully',
@@ -100,7 +117,7 @@ exports.deleteStaff = async (req, res) => {
 exports.updateStaff = async (req, res) => {
     try {
         const { name, email, phone, role } = req.body;
-        
+
         // Check if email is being changed and already exists
         if (email) {
             const existing = await Staff.findOne({ email, _id: { $ne: req.params.id } });
@@ -124,6 +141,15 @@ exports.updateStaff = async (req, res) => {
                 message: 'Staff not found',
             });
         }
+
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('staffUpdated', {
+            _id: staff._id,
+            name: staff.name,
+            role: staff.role,
+            email: staff.email
+        });
 
         res.status(200).json({
             success: true,

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Notifications Tester</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .connection-status {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .controls h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .test-btn {
+            padding: 8px 15px;
+            margin: 5px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .test-btn:hover {
+            background: #5568d3;
+        }
+
+        .notifications {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .notifications h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .notification {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.new {
+            border-left-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .notification-event {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .notification-data {
+            font-size: 13px;
+            color: #333;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .clear-btn {
+            padding: 8px 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            float: right;
+        }
+
+        .clear-btn:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔔 WebSocket Notifications Tester</h1>
+        <p class="subtitle">Real-time notification testing for Manager and Customer</p>
+
+        <div class="connection-status disconnected" id="connectionStatus">
+            ⚠️ Disconnected from WebSocket server
+        </div>
+
+        <div class="panels">
+            <!-- Manager Panel -->
+            <div class="panel">
+                <h2>👨‍💼 Manager/Admin Dashboard</h2>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="managerTotal">0</div>
+                        <div class="stat-label">Total Events</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="managerOrders">0</div>
+                        <div class="stat-label">Order Events</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="managerMenu">0</div>
+                        <div class="stat-label">Menu Events</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <h3>⚡ Trigger Test Events</h3>
+                    <button class="test-btn" onclick="simulateEvent('menuItemCreated')">New Menu Item</button>
+                    <button class="test-btn" onclick="simulateEvent('orderCreated')">New Order</button>
+                    <button class="test-btn" onclick="simulateEvent('orderStatusChanged')">Status Changed</button>
+                    <button class="test-btn" onclick="simulateEvent('staffCreated')">New Staff</button>
+                    <button class="test-btn" onclick="simulateEvent('agentCreated')">New Agent</button>
+                </div>
+
+                <div class="notifications">
+                    <h3>
+                        Live Notifications
+                        <button class="clear-btn" onclick="clearNotifications('manager')">Clear</button>
+                    </h3>
+                    <div id="managerNotifications">
+                        <p style="color: #999; text-align: center; padding: 20px;">
+                            Waiting for events...
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Panel -->
+            <div class="panel">
+                <h2>🛒 Customer Dashboard</h2>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="customerTotal">0</div>
+                        <div class="stat-label">Total Events</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="customerOrders">0</div>
+                        <div class="stat-label">Order Updates</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="customerLast">--</div>
+                        <div class="stat-label">Last Status</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <h3>⚡ Simulate Order Updates</h3>
+                    <button class="test-btn" onclick="simulateCustomerEvent('confirmed')">Confirmed</button>
+                    <button class="test-btn" onclick="simulateCustomerEvent('preparing')">Preparing</button>
+                    <button class="test-btn" onclick="simulateCustomerEvent('dispatched')">Dispatched</button>
+                    <button class="test-btn" onclick="simulateCustomerEvent('delivered')">Delivered</button>
+                </div>
+
+                <div class="notifications">
+                    <h3>
+                        Order Updates
+                        <button class="clear-btn" onclick="clearNotifications('customer')">Clear</button>
+                    </h3>
+                    <div id="customerNotifications">
+                        <p style="color: #999; text-align: center; padding: 20px;">
+                            Waiting for your order updates...
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let socket;
+        let managerStats = { total: 0, orders: 0, menu: 0 };
+        let customerStats = { total: 0, orders: 0, lastStatus: '--' };
+
+        // Connect to WebSocket
+        function connectWebSocket() {
+            socket = io('http://localhost:5000');
+
+            socket.on('connect', () => {
+                console.log('Connected to WebSocket server');
+                const statusDiv = document.getElementById('connectionStatus');
+                statusDiv.className = 'connection-status connected';
+                statusDiv.innerHTML = '✅ Connected to WebSocket server';
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from WebSocket server');
+                const statusDiv = document.getElementById('connectionStatus');
+                statusDiv.className = 'connection-status disconnected';
+                statusDiv.innerHTML = '⚠️ Disconnected from WebSocket server';
+            });
+
+            // Manager Events
+            setupManagerListeners();
+
+            // Customer Events
+            setupCustomerListeners();
+        }
+
+        function setupManagerListeners() {
+            const managerEvents = [
+                'menuItemCreated', 'menuItemUpdated', 'menuItemDeleted', 'menuItemToggled',
+                'orderCreated', 'orderUpdated', 'orderStatusChanged',
+                'staffCreated', 'staffUpdated', 'staffDeleted',
+                'agentCreated', 'agentUpdated', 'agentDeleted'
+            ];
+
+            managerEvents.forEach(eventName => {
+                socket.on(eventName, (data) => {
+                    console.log(`Manager received: ${eventName}`, data);
+                    addManagerNotification(eventName, data);
+                    updateManagerStats(eventName);
+                });
+            });
+        }
+
+        function setupCustomerListeners() {
+            socket.on('orderStatusChanged', (data) => {
+                console.log('Customer received: orderStatusChanged', data);
+                addCustomerNotification('orderStatusChanged', data);
+                updateCustomerStats(data.status);
+            });
+
+            socket.on('orderAssigned', (data) => {
+                console.log('Customer received: orderAssigned', data);
+                addCustomerNotification('orderAssigned', data);
+                updateCustomerStats();
+            });
+        }
+
+        function addManagerNotification(event, data) {
+            const container = document.getElementById('managerNotifications');
+            if (container.children[0]?.textContent.includes('Waiting')) {
+                container.innerHTML = '';
+            }
+
+            const notification = document.createElement('div');
+            notification.className = 'notification new';
+            notification.innerHTML = `
+                <div class="notification-time">${new Date().toLocaleTimeString()}</div>
+                <div class="notification-event">${event}</div>
+                <div class="notification-data">${JSON.stringify(data, null, 2)}</div>
+            `;
+
+            container.insertBefore(notification, container.firstChild);
+
+            // Remove 'new' class after animation
+            setTimeout(() => notification.classList.remove('new'), 3000);
+
+            // Keep only last 20 notifications
+            while (container.children.length > 20) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        function addCustomerNotification(event, data) {
+            const container = document.getElementById('customerNotifications');
+            if (container.children[0]?.textContent.includes('Waiting')) {
+                container.innerHTML = '';
+            }
+
+            const notification = document.createElement('div');
+            notification.className = 'notification new';
+
+            let message = '';
+            if (event === 'orderStatusChanged') {
+                message = `Your order is now <strong>${data.status}</strong>`;
+                if (data.note) message += `<br><small>${data.note}</small>`;
+            } else if (event === 'orderAssigned') {
+                message = `Delivery agent assigned: ${data.agentName}<br><small>Contact: ${data.agentPhone}</small>`;
+            }
+
+            notification.innerHTML = `
+                <div class="notification-time">${new Date().toLocaleTimeString()}</div>
+                <div class="notification-event">${event}</div>
+                <div class="notification-data">${message}</div>
+            `;
+
+            container.insertBefore(notification, container.firstChild);
+            setTimeout(() => notification.classList.remove('new'), 3000);
+
+            while (container.children.length > 20) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        function updateManagerStats(event) {
+            managerStats.total++;
+            if (event.includes('order')) managerStats.orders++;
+            if (event.includes('menu')) managerStats.menu++;
+
+            document.getElementById('managerTotal').textContent = managerStats.total;
+            document.getElementById('managerOrders').textContent = managerStats.orders;
+            document.getElementById('managerMenu').textContent = managerStats.menu;
+        }
+
+        function updateCustomerStats(status) {
+            customerStats.total++;
+            customerStats.orders++;
+            if (status) customerStats.lastStatus = status;
+
+            document.getElementById('customerTotal').textContent = customerStats.total;
+            document.getElementById('customerOrders').textContent = customerStats.orders;
+            document.getElementById('customerLast').textContent = customerStats.lastStatus;
+        }
+
+        function simulateEvent(eventName) {
+            const testData = {
+                menuItemCreated: { _id: '123', name: 'Test Item', price: 150, category: 'Test' },
+                orderCreated: { _id: '456', orderNumber: 'ORD-TEST-001', customerName: 'Test User', status: 'pending' },
+                orderStatusChanged: { _id: '456', orderNumber: 'ORD-TEST-001', status: 'confirmed', changedBy: 'Admin' },
+                staffCreated: { _id: '789', name: 'Test Staff', role: 'server' },
+                agentCreated: { _id: '101', name: 'Test Agent', status: 'active' }
+            };
+
+            addManagerNotification(eventName, testData[eventName] || { test: true });
+            updateManagerStats(eventName);
+        }
+
+        function simulateCustomerEvent(status) {
+            const data = {
+                orderNumber: 'ORD-TEST-001',
+                status: status,
+                note: `Order ${status} - test simulation`
+            };
+            addCustomerNotification('orderStatusChanged', data);
+            updateCustomerStats(status);
+        }
+
+        function clearNotifications(panel) {
+            const container = document.getElementById(panel === 'manager' ? 'managerNotifications' : 'customerNotifications');
+            container.innerHTML = `<p style="color: #999; text-align: center; padding: 20px;">
+                ${panel === 'manager' ? 'Waiting for events...' : 'Waiting for your order updates...'}
+            </p>`;
+
+            if (panel === 'manager') {
+                managerStats = { total: 0, orders: 0, menu: 0 };
+                document.getElementById('managerTotal').textContent = '0';
+                document.getElementById('managerOrders').textContent = '0';
+                document.getElementById('managerMenu').textContent = '0';
+            } else {
+                customerStats = { total: 0, orders: 0, lastStatus: '--' };
+                document.getElementById('customerTotal').textContent = '0';
+                document.getElementById('customerOrders').textContent = '0';
+                document.getElementById('customerLast').textContent = '--';
+            }
+        }
+
+        // Connect on page load
+        connectWebSocket();
+    </script>
+</body>
+
+</html>

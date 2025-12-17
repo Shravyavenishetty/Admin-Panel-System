@@ -4,6 +4,8 @@
  */
 
 const DeliveryAgent = require('../models/DeliveryAgent');
+const Order = require('../models/Order');
+const { getIO } = require('../config/socket');
 
 /**
  * Get all delivery agents
@@ -51,6 +53,14 @@ exports.createAgent = async (req, res) => {
             vehicleType,
         });
 
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('agentCreated', {
+            _id: agent._id,
+            name: agent.name,
+            status: agent.status
+        });
+
         res.status(201).json({
             success: true,
             message: 'Delivery agent created successfully',
@@ -79,6 +89,13 @@ exports.deleteAgent = async (req, res) => {
                 message: 'Delivery agent not found',
             });
         }
+
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('agentDeleted', {
+            id: agent._id,
+            name: agent.name
+        });
 
         res.status(200).json({
             success: true,
@@ -123,6 +140,14 @@ exports.updateAgentStatus = async (req, res) => {
             });
         }
 
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('agentUpdated', {
+            _id: agent._id,
+            name: agent.name,
+            status: agent.status
+        });
+
         res.status(200).json({
             success: true,
             data: agent
@@ -143,7 +168,7 @@ exports.updateAgentStatus = async (req, res) => {
 exports.updateAgent = async (req, res) => {
     try {
         const { name, email, phone, vehicleType } = req.body;
-        
+
         // Check if email is being changed and already exists
         if (email) {
             const existing = await DeliveryAgent.findOne({ email, _id: { $ne: req.params.id } });
@@ -167,6 +192,14 @@ exports.updateAgent = async (req, res) => {
                 message: 'Delivery agent not found',
             });
         }
+
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('agentUpdated', {
+            _id: agent._id,
+            name: agent.name,
+            status: agent.status
+        });
 
         res.status(200).json({
             success: true,
