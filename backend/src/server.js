@@ -22,6 +22,7 @@ const { publicRouter: menuPublicRoutes, adminRouter: menuAdminRoutes } = require
 const zonePricingRoutes = require('./routes/zonePricingRoutes');
 const systemConfigRoutes = require('./routes/systemConfigRoutes');
 const { adminRouter: outletAdminRoutes, publicRouter: outletPublicRoutes } = require('./routes/outletRoutes');
+const customerRoutes = require('./routes/customerRoutes');
 
 // Initialize Express app
 const app = express();
@@ -75,6 +76,7 @@ app.get('/health', (req, res) => {
 
 // Admin routes
 app.use('/api/admin', adminRoutes);
+app.use('/api/customer', customerRoutes); // Customer routes
 
 // CRUD routes (Task 2)
 app.use('/admin/staff', staffRoutes);

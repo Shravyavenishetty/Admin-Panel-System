@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Order Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            grid-column: 1 / -1;
+            margin-bottom: 20px;
+        }
+
+        .menu-section,
+        .order-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-section h2,
+        .order-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .menu-item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .menu-item-price {
+            color: #667eea;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .menu-item-category {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 8px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .add-btn:hover {
+            background: #5568d3;
+        }
+
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cart-item-price {
+            color: #667eea;
+        }
+
+        .quantity-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: #667eea;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .quantity-btn:hover {
+            background: #5568d3;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .price-breakdown {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .price-row.total {
+            font-weight: bold;
+            font-size: 18px;
+            color: #667eea;
+            border-top: 2px solid #667eea;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .place-order-btn {
+            width: 100%;
+            padding: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .place-order-btn:hover {
+            background: #218838;
+        }
+
+        .place-order-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+
+        .login-section {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .login-btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .login-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .user-info {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-section" id="loginSection">
+        <button class="login-btn" onclick="showLogin()">Customer Login</button>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="hideLogin()">&times;</span>
+            <h3>Customer Login</h3>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="customer@example.com" value="customer@test.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter password" value="customer123">
+            </div>
+            <button class="place-order-btn" onclick="handleLogin()">Login</button>
+            <p style="margin-top: 15px; font-size: 14px; color: #666;">
+                Demo credentials: customer@test.com / customer123
+            </p>
+        </div>
+    </div>
+
+    <h1>🍵 Teas N Trees - Customer Order Demo</h1>
+
+    <div class="container">
+        <!-- Menu Section -->
+        <div class="menu-section">
+            <h2>Menu</h2>
+            <div class="menu-grid" id="menuGrid">
+                <p style="text-align: center; color: #999;">Loading menu...</p>
+            </div>
+        </div>
+
+        <!-- Order Section -->
+        <div class="order-section">
+            <h2>Your Order</h2>
+
+            <div class="cart-items" id="cartItems">
+                <div class="empty-cart">
+                    🛒 Your cart is empty<br>
+                    <small>Add items from the menu</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Select Outlet</label>
+                <select id="outletSelect">
+                    <option value="">Select outlet...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" id="customerName" placeholder="Enter your name" value="Test Customer">
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="customerPhone" placeholder="Enter phone number" value="9876543210">
+            </div>
+
+            <div class="form-group">
+                <label>Delivery Address</label>
+                <input type="text" id="deliveryAddress" placeholder="Enter delivery address"
+                    value="123 Main Street, Guntur">
+            </div>
+
+            <div class="price-breakdown" id="priceBreakdown" style="display: none;">
+                <div class="price-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">₹0</span>
+                </div>
+                <div class="price-row">
+                    <span>Delivery Fee:</span>
+                    <span id="deliveryFee">₹0</span>
+                </div>
+                <div class="price-row">
+                    <span>Zone Charge:</span>
+                    <span id="zoneCharge">₹0</span>
+                </div>
+                <div class="price-row">
+                    <span>GST (5%):</span>
+                    <span id="gst">₹0</span>
+                </div>
+                <div class="price-row total">
+                    <span>Total:</span>
+                    <span id="total">₹0</span>
+                </div>
+            </div>
+
+            <button class="place-order-btn" id="placeOrderBtn" disabled>
+                Place Order
+            </button>
+
+            <div class="success-message" id="successMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        let menuItems = [];
+        let outlets = [];
+        let cart = [];
+        let authToken = localStorage.getItem('customerToken');
+        let currentUser = null;
+
+        // Check if logged in on page load
+        window.onload = function () {
+            if (authToken) {
+                verifyToken();
+            }
+            loadData();
+        };
+
+        function showLogin() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function hideLogin() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('/api/customer/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    authToken = data.token;
+                    localStorage.setItem('customerToken', authToken);
+                    currentUser = data.user;
+                    updateLoginUI();
+                    hideLogin();
+                    alert('Logged in successfully!');
+                } else {
+                    alert('Login failed: ' + data.message);
+                }
+            } catch (error) {
+                alert('Login error: ' + error.message);
+            }
+        }
+
+        function handleLogout() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('customerToken');
+            updateLoginUI();
+            alert('Logged out successfully');
+        }
+
+        async function verifyToken() {
+            try {
+                const response = await fetch('/api/admin/verify', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    currentUser = data.user;
+                    updateLoginUI();
+                } else {
+                    handleLogout();
+                }
+            } catch (error) {
+                handleLogout();
+            }
+        }
+
+        function updateLoginUI() {
+            const section = document.getElementById('loginSection');
+            if (currentUser) {
+                section.innerHTML = `
+                    <div class="user-info">
+                        <span>Welcome, ${currentUser.name || currentUser.email}</span>
+                        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+                    </div>
+                `;
+            } else {
+                section.innerHTML = `
+                    <button class="login-btn" onclick="showLogin()">Customer Login</button>
+                `;
+            }
+        }
+
+        // Load menu and outlets
+        async function loadData() {
+            try {
+                // Load menu
+                const menuRes = await fetch('/api/menu');
+                const menuData = await menuRes.json();
+                if (menuData.success) {
+                    menuItems = menuData.data;
+                    renderMenu();
+                }
+
+                // Load outlets
+                const outletRes = await fetch('/api/outlets');
+                const outletData = await outletRes.json();
+                if (outletData.success) {
+                    outlets = outletData.data;
+                    renderOutlets();
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('menuGrid').innerHTML = '<p style="color: red;">Error loading menu</p>';
+            }
+        }
+
+        function renderMenu() {
+            const grid = document.getElementById('menuGrid');
+            if (menuItems.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #999;">No menu items available</p>';
+                return;
+            }
+
+            grid.innerHTML = menuItems.map(item => `
+                <div class="menu-item">
+                    <div class="menu-item-name">${item.name}</div>
+                    <div class="menu-item-category">${item.category || 'Uncategorized'}</div>
+                    <div class="menu-item-price">₹${item.price}</div>
+                    <button class="add-btn" onclick="addToCart('${item._id}')">
+                        Add to Cart
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderOutlets() {
+            const select = document.getElementById('outletSelect');
+            select.innerHTML = '<option value="">Select outlet...</option>' +
+                outlets.map(outlet => `
+                    <option value="${outlet._id}">${outlet.name} - ${outlet.city}</option>
+                `).join('');
+        }
+
+        function addToCart(itemId) {
+            const item = menuItems.find(m => m._id === itemId);
+            if (!item) return;
+
+            const existingItem = cart.find(c => c.menuItemId === itemId);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    menuItemId: itemId,
+                    name: item.name,
+                    price: item.price,
+                    quantity: 1
+                });
+            }
+            renderCart();
+            calculatePrice();
+        }
+
+        function updateQuantity(itemId, delta) {
+            const item = cart.find(c => c.menuItemId === itemId);
+            if (!item) return;
+
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(c => c.menuItemId !== itemId);
+            }
+            renderCart();
+            calculatePrice();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartItems');
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        🛒 Your cart is empty<br>
+                        <small>Add items from the menu</small>
+                    </div>
+                `;
+                document.getElementById('placeOrderBtn').disabled = true;
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div>
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">₹${item.price} × ${item.quantity} = ₹${item.price * item.quantity}</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity('${item.menuItemId}', -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" onclick="updateQuantity('${item.menuItemId}', 1)">+</button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('placeOrderBtn').disabled = false;
+        }
+
+        async function calculatePrice() {
+            if (cart.length === 0) {
+                document.getElementById('priceBreakdown').style.display = 'none';
+                return;
+            }
+
+            const outletId = document.getElementById('outletSelect').value;
+            if (!outletId) {
+                document.getElementById('priceBreakdown').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/orders/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: cart,
+                        outletId: outletId,
+                        deliveryAddress: {
+                            address: document.getElementById('deliveryAddress').value,
+                            lat: 16.3067, // Guntur central coordinates
+                            lng: 80.4365
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('priceBreakdown').style.display = 'block';
+                    document.getElementById('subtotal').textContent = `₹${data.data.subtotal}`;
+                    document.getElementById('deliveryFee').textContent = `₹${data.data.distanceFee}`;
+                    document.getElementById('zoneCharge').textContent = `₹${data.data.zoneModifier}`;
+                    document.getElementById('gst').textContent = `₹${data.data.gstAmount}`;
+                    document.getElementById('total').textContent = `₹${data.data.finalPrice}`;
+                }
+            } catch (error) {
+                console.error('Error calculating price:', error);
+            }
+        }
+
+        async function placeOrder() {
+            if (!authToken) {
+                alert('Please login first to place an order');
+                showLogin();
+                return;
+            }
+
+            const outletId = document.getElementById('outletSelect').value;
+            const customerName = document.getElementById('customerName').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+            const deliveryAddress = document.getElementById('deliveryAddress').value;
+
+            if (!outletId || !customerName || !customerPhone || !deliveryAddress) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            if (cart.length === 0) {
+                alert('Cart is empty');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        customerName,
+                        customerPhone,
+                        items: cart,
+                        outletId,
+                        deliveryAddress: {
+                            address: deliveryAddress,
+                            lat: 16.3067,
+                            lng: 80.4365
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    const successMsg = document.getElementById('successMessage');
+                    successMsg.innerHTML = `
+                        ✅ Order placed successfully!<br>
+                        <strong>Order Number:</strong> ${data.data.orderNumber}<br>
+                        <strong>Total:</strong> ₹${data.data.finalPrice}<br>
+                        <small>Check the admin panel to see your order!</small>
+                    `;
+                    successMsg.style.display = 'block';
+
+                    // Clear cart
+                    cart = [];
+                    renderCart();
+                    document.getElementById('priceBreakdown').style.display = 'none';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error placing order: ' + error.message);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('outletSelect').addEventListener('change', calculatePrice);
+        document.getElementById('placeOrderBtn').addEventListener('click', placeOrder);
+    </script>
+</body>
+
+</html>
