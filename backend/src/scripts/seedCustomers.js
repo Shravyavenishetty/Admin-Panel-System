@@ -49,8 +49,13 @@ async function seedCustomers() {
         await Customer.deleteMany({});
         console.log('Cleared existing customers');
 
-        // Insert demo customers
-        const customers = await Customer.insertMany(demoCustomers);
+        // Insert demo customers one by one to trigger password hashing
+        const customers = [];
+        for (const customerData of demoCustomers) {
+            const customer = await Customer.create(customerData);
+            customers.push(customer);
+        }
+
         console.log(`Successfully seeded ${customers.length} demo customers`);
 
         console.log('\nSeeded Customers:');
