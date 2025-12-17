@@ -71,13 +71,13 @@ const sampleZones = [
     },
     {
         zoneId: 'GNT006',
-        name: 'Guntur Outer - Ring Road',
-        description: 'Outer ring areas, Brindavan Gardens, Collector office side',
-        centerLat: 16.3300,
-        centerLng: 80.4650,
+        name: 'Guntur Outer',
+        description: 'Outer ring areas, suburbs, and periphery',
+        centerLat: 16.3200,
+        centerLng: 80.4200,
         radiusKm: 4,
         modifierType: 'fixed',
-        value: 30, // ₹30 extra
+        value: 30, // ₹30 extra - farthest zone
         active: true,
         priority: 5,
     },

@@ -5,6 +5,7 @@
 
 const Outlet = require('../models/Outlet');
 const { getIO } = require('../config/socket');
+const { getZoneCoordinates, isValidZone } = require('../config/gunturZones');
 
 /**
  * Get all outlets
@@ -34,13 +35,22 @@ exports.getAllOutlets = async (req, res) => {
  */
 exports.createOutlet = async (req, res) => {
     try {
-        const { name, address, phone, city } = req.body;
+        const { name, address, phone, city, zone } = req.body;
+
+        // Auto-assign coordinates based on zone
+        let location = {};
+        if (zone && isValidZone(zone)) {
+            const coords = getZoneCoordinates(zone);
+            location = coords;
+        }
 
         const outlet = await Outlet.create({
             name,
             address,
             phone,
             city,
+            zone,
+            location
         });
 
         // Emit WebSocket event
@@ -48,7 +58,8 @@ exports.createOutlet = async (req, res) => {
         io.emit('outletCreated', {
             _id: outlet._id,
             name: outlet.name,
-            city: outlet.city
+            city: outlet.city,
+            zone: outlet.zone
         });
 
         res.status(201).json({
@@ -106,11 +117,18 @@ exports.deleteOutlet = async (req, res) => {
  */
 exports.updateOutlet = async (req, res) => {
     try {
-        const { name, address, phone, city, managerName } = req.body;
+        const { name, address, phone, city, zone } = req.body;
+
+        // Auto-assign coordinates based on zone
+        let updateData = { name, address, phone, city, zone };
+        if (zone && isValidZone(zone)) {
+            const coords = getZoneCoordinates(zone);
+            updateData.location = coords;
+        }
 
         const outlet = await Outlet.findByIdAndUpdate(
             req.params.id,
-            { name, address, phone, city, managerName },
+            updateData,
             { new: true, runValidators: true }
         );
 
@@ -126,7 +144,8 @@ exports.updateOutlet = async (req, res) => {
         io.emit('outletUpdated', {
             _id: outlet._id,
             name: outlet.name,
-            city: outlet.city
+            city: outlet.city,
+            zone: outlet.zone
         });
 
         res.status(200).json({

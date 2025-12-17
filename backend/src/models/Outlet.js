@@ -25,6 +25,11 @@ const outletSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
+    zone: {
+        type: String,
+        enum: ['Guntur South', 'Guntur North', 'Guntur Central', 'Guntur East', 'Guntur West', 'Guntur Outer'],
+        trim: true,
+    },
     location: {
         lat: {
             type: Number,

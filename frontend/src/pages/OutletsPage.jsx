@@ -16,10 +16,7 @@ const OutletsPage = () => {
         address: '',
         phone: '',
         city: '',
-        location: {
-            lat: '',
-            lng: ''
-        }
+        zone: ''
     });
     const [error, setError] = useState('');
 
@@ -65,10 +62,7 @@ const OutletsPage = () => {
             address: outlet.address,
             phone: outlet.phone,
             city: outlet.city || '',
-            location: {
-                lat: outlet.location?.lat || '',
-                lng: outlet.location?.lng || ''
-            }
+            zone: outlet.zone || ''
         });
         setEditingId(outlet._id);
         setShowForm(true);
@@ -76,7 +70,7 @@ const OutletsPage = () => {
     };
 
     const handleCancelEdit = () => {
-        setFormData({ name: '', address: '', phone: '', city: '', location: { lat: '', lng: '' } });
+        setFormData({ name: '', address: '', phone: '', city: '', zone: '' });
         setEditingId(null);
         setShowForm(false);
         setError('');
@@ -172,32 +166,20 @@ const OutletsPage = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-white/90 text-sm font-medium mb-2">Latitude</label>
-                            <input
-                                type="number"
-                                step="any"
-                                value={formData.location?.lat || ''}
-                                onChange={(e) => setFormData({
-                                    ...formData,
-                                    location: { ...formData.location, lat: e.target.value }
-                                })}
-                                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                placeholder="16.3067 (Guntur)"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-white/90 text-sm font-medium mb-2">Longitude</label>
-                            <input
-                                type="number"
-                                step="any"
-                                value={formData.location?.lng || ''}
-                                onChange={(e) => setFormData({
-                                    ...formData,
-                                    location: { ...formData.location, lng: e.target.value }
-                                })}
-                                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                placeholder="80.4365 (Guntur)"
-                            />
+                            <label className="block text-white/90 text-sm font-medium mb-2">Zone</label>
+                            <select
+                                value={formData.zone}
+                                onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
+                                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 [&>option]:bg-gray-800 [&>option]:text-white"
+                            >
+                                <option value="">Select Zone</option>
+                                <option value="Guntur South">Guntur South</option>
+                                <option value="Guntur North">Guntur North</option>
+                                <option value="Guntur Central">Guntur Central</option>
+                                <option value="Guntur East">Guntur East</option>
+                                <option value="Guntur West">Guntur West</option>
+                                <option value="Guntur Outer">Guntur Outer</option>
+                            </select>
                         </div>
                         <div className="md:col-span-2">
                             <button
