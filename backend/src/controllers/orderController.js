@@ -7,6 +7,7 @@ const Order = require('../models/Order');
 const Menu = require('../models/Menu');
 const Outlet = require('../models/Outlet');
 const { calculateOrderPricing } = require('../services/pricingService');
+const { getIO } = require('../config/socket');
 const {
     buildSearchQuery,
     buildFilterQuery,
@@ -205,6 +206,15 @@ exports.createOrder = async (req, res) => {
             .populate('outlet', 'name address phone')
             .populate('items.menuItem', 'name category');
 
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('orderCreated', {
+            _id: populatedOrder._id,
+            orderNumber: populatedOrder.orderNumber,
+            customerName: populatedOrder.customerName,
+            status: populatedOrder.status
+        });
+
         res.status(201).json({
             success: true,
             message: 'Order created successfully',
@@ -364,6 +374,15 @@ exports.updateOrderStatus = async (req, res) => {
         await order.populate('outlet', 'name address');
         await order.populate('deliveryAgent', 'name phone');
 
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('orderStatusChanged', {
+            _id: order._id,
+            orderNumber: order.orderNumber,
+            status: order.status,
+            changedBy: req.user ? req.user.name : 'System'
+        });
+
         res.status(200).json({
             success: true,
             message: 'Order status updated successfully',
@@ -445,6 +464,14 @@ exports.assignDeliveryAgent = async (req, res) => {
                 message: 'Order not found',
             });
         }
+
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('orderAssigned', {
+            orderNumber: order.orderNumber,
+            agentName: order.deliveryAgent.name,
+            agentPhone: order.deliveryAgent.phone
+        });
 
         res.status(200).json({
             success: true,
