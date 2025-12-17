@@ -1,59 +1,77 @@
+
 /**
  * Authentication Middleware
  * Protects routes by verifying JWT token
  */
 
 const { verifyToken } = require('../utils/jwt');
+const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
+const Customer = require('../models/Customer'); // Added Customer model import
 
 /**
- * Middleware to authenticate admin users
+ * Middleware to authenticate users (admin or customer)
  * Checks for JWT token in Authorization header
- * Attaches admin user to request object if valid
+ * Attaches user to request object if valid
  */
-const authenticateAdmin = async (req, res, next) => {
+const protect = async (req, res, next) => {
     try {
-        // Get token from Authorization header
-        const authHeader = req.headers.authorization;
+        let token;
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        // Check for token in Authorization header
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+            token = req.headers.authorization.split(' ')[1];
+        }
+
+        if (!token) {
             return res.status(401).json({
                 success: false,
                 message: 'No token provided. Access denied.',
             });
         }
 
-        // Extract token from "Bearer <token>"
-        const token = authHeader.split(' ')[1];
-
         // Verify token
-        const decoded = verifyToken(token);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Find admin user by ID from token
-        const admin = await Admin.findById(decoded.id).select('-password');
-
-        if (!admin) {
-            return res.status(401).json({
-                success: false,
-                message: 'Admin user not found. Access denied.',
-            });
+        // Load user based on role from token
+        let user;
+        if (decoded.role === 'customer') {
+            user = await Customer.findById(decoded.id).select('-password'); // Exclude password
+            if (!user) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Customer user not found. Access denied.',
+                });
+            }
+        } else {
+            // Default to Admin if role is not customer or not specified
+            user = await Admin.findById(decoded.id).select('-password'); // Exclude password
+            if (!user) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Admin user not found. Access denied.',
+                });
+            }
         }
 
-        // Attach admin to request object for use in route handlers
-        // Use 'user' property for consistency with authorize middleware
-        req.user = admin;
-        req.admin = admin; // Keep for backward compatibility
+        // Attach user to request
+        req.user = {
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            role: decoded.role || user.role, // Use role from token, fallback to user object
+        };
 
-        // Continue to next middleware/route handler
         next();
     } catch (error) {
         return res.status(401).json({
             success: false,
-            message: 'Invalid or expired token. Access denied.',
+            message: 'Invalid token. Access denied.',
+            error: error.message, // Include error message for debugging
         });
     }
 };
 
 // Export as 'protect' for consistency with route imports
-module.exports = authenticateAdmin;
-module.exports.protect = authenticateAdmin;
+module.exports = protect;
+module.exports.protect = protect;
