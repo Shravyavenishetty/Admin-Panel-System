@@ -1,5 +1,5 @@
 /**
- * Outlets Management Page -
+ * Outlets Management Page 
  * Complete CRUD interface for outlet management
  */
 
@@ -169,6 +169,34 @@ const OutletsPage = () => {
                                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                                 className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 placeholder="City name"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-white/90 text-sm font-medium mb-2">Latitude</label>
+                            <input
+                                type="number"
+                                step="any"
+                                value={formData.location?.lat || ''}
+                                onChange={(e) => setFormData({
+                                    ...formData,
+                                    location: { ...formData.location, lat: e.target.value }
+                                })}
+                                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="16.3067 (Guntur)"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-white/90 text-sm font-medium mb-2">Longitude</label>
+                            <input
+                                type="number"
+                                step="any"
+                                value={formData.location?.lng || ''}
+                                onChange={(e) => setFormData({
+                                    ...formData,
+                                    location: { ...formData.location, lng: e.target.value }
+                                })}
+                                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="80.4365 (Guntur)"
                             />
                         </div>
                         <div className="md:col-span-2">
