@@ -18,6 +18,7 @@ const menuCategories = [
     'Cold Pressed Juices',
     'Fruit Bowls',
     'Desserts',
+    'Ice Cream Scoops',
     'Salads & Soups',
     'Garlic Breads & Toasts',
     'Deep Fries',
