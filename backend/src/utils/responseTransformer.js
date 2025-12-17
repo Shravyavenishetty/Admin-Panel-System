@@ -9,6 +9,7 @@
 const fieldVisibility = {
     menu: {
         public: ['_id', 'name', 'description', 'price', 'category', 'image', 'availability', 'foodType', 'tags'],
+        customer: ['_id', 'name', 'description', 'price', 'category', 'image', 'availability', 'foodType', 'tags'],
         user: ['_id', 'name', 'description', 'price', 'category', 'image', 'availability', 'foodType', 'tags'],
         manager: ['_id', 'name', 'description', 'price', 'category', 'image', 'availability', 'foodType', 'tags', 'popularity', 'createdAt', 'updatedAt'],
         admin: 'all', // All fields

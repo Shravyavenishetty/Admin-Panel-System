@@ -495,8 +495,8 @@
         // Load menu and outlets
         async function loadData() {
             try {
-                // Load menu
-                const menuRes = await fetch('/api/menu');
+                // Load menu with higher limit to get all items
+                const menuRes = await fetch('/api/menu?limit=100');
                 const menuData = await menuRes.json();
                 if (menuData.success) {
                     menuItems = menuData.data;
