@@ -10,52 +10,76 @@ const connectDB = require('../config/database');
 
 const sampleZones = [
     {
-        zoneId: 'ZONE001',
-        name: 'Downtown High-Traffic Zone',
-        description: 'City center with high traffic and order volume',
-        centerLat: 12.9716, // Bangalore MG Road area
-        centerLng: 77.5946,
-        radiusKm: 2.5,
-        modifierType: 'percent',
-        value: 10, // +10% surcharge
+        zoneId: 'GNT001',
+        name: 'Guntur Central',
+        description: 'Main city center - Arundelpet, Lakshmipuram, Brodipet',
+        centerLat: 16.3067,
+        centerLng: 80.4365,
+        radiusKm: 2,
+        modifierType: 'fixed',
+        value: 0, // No extra charge
         active: true,
         priority: 10,
     },
     {
-        zoneId: 'ZONE002',
-        name: 'Quick Delivery Zone',
-        description: 'Nearby areas with fast delivery promise',
-        centerLat: 12.9352, // Bangalore Indiranagar
-        centerLng: 77.6406,
+        zoneId: 'GNT002',
+        name: 'Guntur North',
+        description: 'Pattabhipuram, Koritepadu, Santhipuram',
+        centerLat: 16.3250,
+        centerLng: 80.4350,
         radiusKm: 3,
-        modifierType: 'percent',
-        value: -5, // -5% discount
-        active: true,
-        priority: 5,
-    },
-    {
-        zoneId: 'ZONE003',
-        name: 'Surge Pricing Zone',
-        description: 'High demand area during peak hours',
-        centerLat: 12.9698, // Bangalore Koramangala
-        centerLng: 77.6400,
-        radiusKm: 2,
         modifierType: 'fixed',
-        value: 25, // +₹25 fixed fee
+        value: 15, // ₹15 extra
         active: true,
         priority: 8,
     },
     {
-        zoneId: 'ZONE004',
-        name: 'Suburban Normal Zone',
-        description: 'Regular suburban areas with standard pricing',
-        centerLat: 13.0358, // Bangalore Yelahanka
-        centerLng: 77.5970,
-        radiusKm: 5,
-        modifierType: 'percent',
-        value: 0, // No modifier
+        zoneId: 'GNT003',
+        name: 'Guntur South',
+        description: 'Nallapadu, Pedakakani, Etukuru areas',
+        centerLat: 16.2850,
+        centerLng: 80.4400,
+        radiusKm: 3.5,
+        modifierType: 'fixed',
+        value: 20, // ₹20 extra
         active: true,
-        priority: 1,
+        priority: 7,
+    },
+    {
+        zoneId: 'GNT004',
+        name: 'Guntur East - Mangalagiri Side',
+        description: 'Mangalagiri approach, industrial areas',
+        centerLat: 16.3050,
+        centerLng: 80.4600,
+        radiusKm: 2.5,
+        modifierType: 'fixed',
+        value: 25, // ₹25 extra
+        active: true,
+        priority: 6,
+    },
+    {
+        zoneId: 'GNT005',
+        name: 'Guntur West - Transport Hub',
+        description: 'Railway station, Bus stand, Gorantla',
+        centerLat: 16.3000,
+        centerLng: 80.4200,
+        radiusKm: 2,
+        modifierType: 'fixed',
+        value: 10, // ₹10 extra
+        active: true,
+        priority: 9,
+    },
+    {
+        zoneId: 'GNT006',
+        name: 'Guntur Outer - Ring Road',
+        description: 'Outer ring areas, Brindavan Gardens, Collector office side',
+        centerLat: 16.3300,
+        centerLng: 80.4650,
+        radiusKm: 4,
+        modifierType: 'fixed',
+        value: 30, // ₹30 extra
+        active: true,
+        priority: 5,
     },
 ];
 
