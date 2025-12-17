@@ -77,8 +77,8 @@ exports.calculatePricing = async (req, res) => {
 
         // Assume outlet has location (you may need to add lat/lng to Outlet model)
         const outletLocation = {
-            lat: outlet.location?.lat || 12.9716, // Default: Bangalore coords
-            lng: outlet.location?.lng || 77.5946,
+            lat: outlet.location?.lat || 16.3067,
+            lng: outlet.location?.lng || 80.4365,
         };
 
         const deliveryLocation = {
@@ -159,8 +159,8 @@ exports.createOrder = async (req, res) => {
 
         // Calculate pricing
         const outletLocation = {
-            lat: outlet.location?.lat || 12.9716,
-            lng: outlet.location?.lng || 77.5946,
+            lat: outlet.location?.lat || 16.3067,
+            lng: outlet.location?.lng || 80.4365,
         };
 
         const deliveryLocation = {
@@ -215,11 +215,39 @@ exports.createOrder = async (req, res) => {
             status: populatedOrder.status
         });
 
-        res.status(201).json({
+        // Convert to plain object for proper serialization
+        const orderData = JSON.parse(JSON.stringify(order));
+        console.log('Order created:', orderData.orderNumber); // Debug
+        console.log('Order finalPrice:', orderData.finalPrice); // Debug
+
+        // Manually construct response to avoid serialization issues
+        const responseData = {
+            _id: String(order._id),
+            orderNumber: String(order.orderNumber),
+            customerName: String(order.customerName),
+            customerPhone: String(order.customerPhone),
+            status: String(order.status),
+            finalPrice: Number(order.finalPrice),
+            subtotal: Number(order.subtotal),
+            distanceFee: Number(order.distanceFee),
+            zoneModifier: Number(order.zoneModifier),
+            gstAmount: Number(order.gstAmount),
+            deliveryAddress: String(order.deliveryAddress),
+            createdAt: order.createdAt
+        };
+
+        console.log('Response data:', responseData); // Debug
+        console.log('Response data JSON:', JSON.stringify(responseData)); // Debug
+
+        const fullResponse = {
             success: true,
             message: 'Order created successfully',
-            data: populatedOrder,
-        });
+            data: responseData
+        };
+
+        console.log('Full response:', JSON.stringify(fullResponse)); // Debug
+
+        res.status(201).json(fullResponse);
     } catch (error) {
         res.status(400).json({
             success: false,

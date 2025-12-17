@@ -15,6 +15,7 @@ const fieldVisibility = {
     },
     order: {
         public: [],
+        customer: ['_id', 'orderNumber', 'customerName', 'customerPhone', 'items', 'deliveryAddress', 'status', 'finalPrice', 'subtotal', 'distanceFee', 'zoneModifier', 'gstAmount', 'createdAt'],
         user: ['_id', 'orderNumber', 'customerName', 'customerPhone', 'items', 'deliveryAddress', 'status', 'finalPrice', 'createdAt'],
         manager: ['_id', 'orderNumber', 'customerName', 'customerPhone', 'items', 'deliveryAddress', 'outlet', 'deliveryAgent', 'status', 'subtotal', 'distanceFee', 'gstAmount', 'finalPrice', 'createdAt', 'updatedAt'],
         admin: 'all',

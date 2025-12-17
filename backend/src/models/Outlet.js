@@ -33,11 +33,11 @@ const outletSchema = new mongoose.Schema({
     location: {
         lat: {
             type: Number,
-            required: false, // Make optional for backward compatibility
+            required: true,
         },
         lng: {
             type: Number,
-            required: false,
+            required: true,
         },
     },
 }, {

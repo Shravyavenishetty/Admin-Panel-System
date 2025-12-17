@@ -687,25 +687,40 @@
                     })
                 });
 
+                // ✅ DECLARE data FIRST
                 const data = await response.json();
-                if (data.success) {
-                    const successMsg = document.getElementById('successMessage');
-                    successMsg.innerHTML = `
-                        ✅ Order placed successfully!<br>
-                        <strong>Order Number:</strong> ${data.data.orderNumber}<br>
-                        <strong>Total:</strong> ₹${data.data.finalPrice}<br>
-                        <small>Check the admin panel to see your order!</small>
-                    `;
-                    successMsg.style.display = 'block';
+                console.log('Order response:', data);
 
-                    // Clear cart
-                    cart = [];
-                    renderCart();
-                    document.getElementById('priceBreakdown').style.display = 'none';
-                } else {
-                    alert('Error: ' + data.message);
+                if (!data.success || !data.data) {
+                    console.error('Invalid response:', data);
+                    alert('Order placed but response format is invalid.');
+                    return;
                 }
+
+                const order = data.data;
+
+                if (!order.orderNumber || typeof order.finalPrice == null) {
+                    console.error('Incomplete order object:', order);
+                    alert('Order placed but response data is incomplete.');
+                    return;
+                }
+
+                const successMsg = document.getElementById('successMessage');
+                successMsg.innerHTML = `
+                    ✅ Order placed successfully!<br>
+                    <strong>Order Number:</strong> ${order.orderNumber}<br>
+                    <strong>Total:</strong> ₹${order.finalPrice}<br>
+                    <small>Check the admin panel to see your order!</small>
+                `;
+                successMsg.style.display = 'block';
+
+                // Clear cart
+                cart = [];
+                renderCart();
+                document.getElementById('priceBreakdown').style.display = 'none';
+
             } catch (error) {
+                console.error('Order error:', error);
                 alert('Error placing order: ' + error.message);
             }
         }
