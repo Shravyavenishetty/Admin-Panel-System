@@ -1,5 +1,5 @@
 /**
- * Outlets Management Page - WITH EDIT FUNCTIONALITY
+ * Outlets Management Page -
  * Complete CRUD interface for outlet management
  */
 
@@ -16,6 +16,10 @@ const OutletsPage = () => {
         address: '',
         phone: '',
         city: '',
+        location: {
+            lat: '',
+            lng: ''
+        }
     });
     const [error, setError] = useState('');
 
@@ -56,21 +60,25 @@ const OutletsPage = () => {
     };
 
     const handleEdit = (outlet) => {
-        setEditingId(outlet._id);
         setFormData({
             name: outlet.name,
             address: outlet.address,
             phone: outlet.phone,
             city: outlet.city || '',
+            location: {
+                lat: outlet.location?.lat || '',
+                lng: outlet.location?.lng || ''
+            }
         });
+        setEditingId(outlet._id);
         setShowForm(true);
         setError('');
     };
 
     const handleCancelEdit = () => {
-        setShowForm(false);
+        setFormData({ name: '', address: '', phone: '', city: '', location: { lat: '', lng: '' } });
         setEditingId(null);
-        setFormData({ name: '', address: '', phone: '', city: '', managerName: '' });
+        setShowForm(false);
         setError('');
     };
 

@@ -8,7 +8,6 @@
     "seed": "node src/scripts/seedAdmin.js",
     "seed:zones": "node src/scripts/seedZones.js",
     "seed:customers": "node src/scripts/seedCustomers.js",
-    "update:outlets": "node src/scripts/updateOutletLocations.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
