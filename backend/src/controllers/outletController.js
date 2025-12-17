@@ -4,6 +4,7 @@
  */
 
 const Outlet = require('../models/Outlet');
+const { getIO } = require('../config/socket');
 
 /**
  * Get all outlets
@@ -42,6 +43,14 @@ exports.createOutlet = async (req, res) => {
             city,
         });
 
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('outletCreated', {
+            _id: outlet._id,
+            name: outlet.name,
+            city: outlet.city
+        });
+
         res.status(201).json({
             success: true,
             message: 'Outlet created successfully',
@@ -70,6 +79,13 @@ exports.deleteOutlet = async (req, res) => {
                 message: 'Outlet not found',
             });
         }
+
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('outletDeleted', {
+            id: outlet._id,
+            name: outlet.name
+        });
 
         res.status(200).json({
             success: true,
@@ -104,6 +120,14 @@ exports.updateOutlet = async (req, res) => {
                 message: 'Outlet not found',
             });
         }
+
+        // Emit WebSocket event
+        const io = getIO();
+        io.emit('outletUpdated', {
+            _id: outlet._id,
+            name: outlet.name,
+            city: outlet.city
+        });
 
         res.status(200).json({
             success: true,
