@@ -318,7 +318,7 @@
 
         // Connect to WebSocket
         function connectWebSocket() {
-            socket = io('http://localhost:5000');
+            socket = io(window.location.origin);
 
             socket.on('connect', () => {
                 console.log('Connected to WebSocket server');
