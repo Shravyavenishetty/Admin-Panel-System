@@ -15,9 +15,9 @@ const connectDB = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        console.log('✅ MongoDB connected successfully');
+        console.log('MongoDB connected successfully');
     } catch (error) {
-        console.error('❌ MongoDB connection error:', error.message);
+        console.error('MongoDB connection error:', error.message);
         process.exit(1);
     }
 };
@@ -31,7 +31,7 @@ const seedAdmin = async () => {
         const existingAdmin = await Admin.findOne({ email: 'admin@admin.com' });
 
         if (existingAdmin) {
-            console.log('⚠️  Admin user already exists');
+            console.log('Admin user already exists');
             return;
         }
 
@@ -43,12 +43,12 @@ const seedAdmin = async () => {
             role: 'admin',
         });
 
-        console.log('✅ Admin user created successfully:');
+        console.log('Admin user created successfully:');
         console.log('   Email:', admin.email);
         console.log('   Password: admin123');
         console.log('   Name:', admin.name);
     } catch (error) {
-        console.error('❌ Error seeding admin:', error.message);
+        console.error('Error seeding admin:', error.message);
     }
 };
 
@@ -61,7 +61,7 @@ const runSeed = async () => {
 
     // Close database connection
     await mongoose.connection.close();
-    console.log('✅ Database connection closed');
+    console.log('Database connection closed');
     process.exit(0);
 };
 

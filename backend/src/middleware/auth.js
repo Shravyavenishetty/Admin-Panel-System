@@ -4,7 +4,6 @@
  * Protects routes by verifying JWT token
  */
 
-const { verifyToken } = require('../utils/jwt');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 const Customer = require('../models/Customer'); // Added Customer model import

@@ -10,9 +10,9 @@ const crypto = require('crypto');
 const jwtSecret = crypto.randomBytes(64).toString('hex');
 const sessionSecret = crypto.randomBytes(64).toString('hex');
 
-console.log('🔐 Generated Secure Secrets:\n');
+console.log('Generated Secure Secrets:\n');
 console.log('JWT_SECRET:');
 console.log(jwtSecret);
 console.log('\nSESSION_SECRET:');
 console.log(sessionSecret);
-console.log('\n✅ Copy these values to your .env file');
+console.log('\nCopy these values to your .env file');

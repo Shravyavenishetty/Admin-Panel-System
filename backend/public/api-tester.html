@@ -271,6 +271,15 @@
         <!-- Login Section -->
         <div class="login-box">
             <h3>🔐 Step 1: Login (Get Token)</h3>
+            <div style="margin-bottom: 15px;">
+                <label style="margin-right: 20px; font-weight: 600;">Login as:</label>
+                <label style="margin-right: 15px;">
+                    <input type="radio" name="userType" value="admin" checked> Admin
+                </label>
+                <label>
+                    <input type="radio" name="userType" value="customer"> Customer
+                </label>
+            </div>
             <input type="email" id="email" placeholder="Email" value="admin@admin.com">
             <input type="password" id="password" placeholder="Password" value="admin123">
             <button onclick="login()">Login</button>
@@ -332,9 +341,13 @@
         async function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const userType = document.querySelector('input[name="userType"]:checked').value;
+
+            // Determine endpoint based on user type
+            const endpoint = userType === 'admin' ? '/api/admin/login' : '/api/customer/login';
 
             try {
-                const response = await fetch('/api/admin/login', {
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -346,8 +359,13 @@
                     token = data.token;
                     const display = document.getElementById('tokenDisplay');
                     display.style.display = 'block';
+
+                    // Handle different response structures for admin vs customer
+                    const userName = data.admin?.name || data.customer?.name || 'User';
+                    const userRole = data.admin?.role || 'customer';
+
                     display.innerHTML = `
-                        ✅ <strong>Logged in as ${data.admin.name} (${data.admin.role})</strong><br>
+                        ✅ <strong>Logged in as ${userName} (${userRole})</strong><br>
                         <small>Token: ${token.substring(0, 50)}...</small>
                     `;
                 } else {
@@ -387,7 +405,7 @@
                         options.body = bodyText;
                     } catch (e) {
                         responseDiv.className = 'response-content error';
-                        responseDiv.innerHTML = '<pre>❌ Invalid JSON in request body</pre>';
+                        responseDiv.innerHTML = '<pre>Invalid JSON in request body</pre>';
                         return;
                     }
                 }
@@ -409,13 +427,13 @@
                 responseDiv.className = 'response-content ' + (data.success ? 'success' : 'error');
                 responseDiv.innerHTML = `
                     <span class="status-badge status-${response.status}">${response.status} ${response.statusText}</span><br>
-                    <strong>${data.success ? '✅ Success' : '❌ Failed'}</strong>
+                    <strong>${data.success ? 'Success' : 'Failed'}</strong>
                     <pre>${JSON.stringify(data, null, 2)}</pre>
                 `;
 
             } catch (error) {
                 responseDiv.className = 'response-content error';
-                responseDiv.innerHTML = `<pre>❌ Error: ${error.message}</pre>`;
+                responseDiv.innerHTML = `<pre>Error: ${error.message}</pre>`;
             }
         }
 
